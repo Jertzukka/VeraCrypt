@@ -56,7 +56,7 @@ then
 
 	if [ $XMESSAGE -eq 0 ] || ([ $XTERM -eq 0 ] && [ $GTERM -eq 0 ] && [ $KTERM -eq 0 ])
 	then
-		which gnome-terminal && exec gnome-terminal -e "$0"
+		which gnome-terminal && exec gnome-terminal -- $0
 		which konsole && exec konsole -e "$0"
 		which xterm && exec xterm -e "$0"
 
@@ -93,7 +93,7 @@ show_message()
 				else
 					if [ $GTERM -eq 1 ]
 					then
-						gnome-terminal --title='VeraCrypt Setup' -e "sh -c \"echo $*; read A\""
+						gnome-terminal --title='VeraCrypt Setup' -- sh -c "echo $*; read A"
 					else
 						if [ $KTERM -eq 1 ]
 						then
@@ -1074,7 +1074,7 @@ then
 		else
 			if [ $GTERM -eq 1 ]
 			then
-				exec gnome-terminal --title='VeraCrypt Setup' -e "sh -c \"echo Installing package...; $SUDO $PACKAGE_INSTALLER $PACKAGE_INSTALLER_OPTS $PACKAGE; rm -f $PACKAGE; echo; echo Press Enter to exit...; read A\""
+				exec gnome-terminal --title='VeraCrypt Setup' -- sh -c "echo Installing package...; $SUDO $PACKAGE_INSTALLER $PACKAGE_INSTALLER_OPTS $PACKAGE; rm -f $PACKAGE; echo; echo Press Enter to exit...; read A"
 			else
 				if [ $KTERM -eq 1 ]
 				then
