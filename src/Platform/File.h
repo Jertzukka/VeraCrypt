@@ -78,6 +78,7 @@ namespace VeraCrypt
 		static size_t GetOptimalReadSize () { return OptimalReadSize; }
 		static size_t GetOptimalWriteSize ()  { return OptimalWriteSize; }
 		uint64 GetPartitionDeviceStartOffset () const;
+		SystemFileHandleType GetFileHandle () const { return FileHandle; }
 		bool IsOpen () const { return FileIsOpen; }
 		FilePath GetPath () const;
 		uint64 Length () const;

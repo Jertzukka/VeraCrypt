@@ -21,6 +21,8 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include <fcntl.h>
+
 #endif
 
 #include "VolumeCreator.h"
@@ -235,6 +237,11 @@ namespace VeraCrypt
 			VolumeFile->Open (options->Path,
 				(options->Path.IsDevice() || options->Type == VolumeType::Hidden) ? File::OpenReadWrite : File::CreateReadWrite,
 				File::ShareNone);
+
+			if (options->Quick && options->Type == VolumeType::Normal) {
+				throw_sys_sub_if(fallocate(VolumeFile->GetFileHandle(), FALLOC_FL_ZERO_RANGE, 0, options->Size) != 0, L"fallocate");
+				VolumeFile->Flush();
+			}
 
 			HostSize = VolumeFile->Length();
 		}

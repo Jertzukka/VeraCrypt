@@ -690,7 +690,6 @@ namespace VeraCrypt
 				}
 			}
 
-			options->Quick = false;
 
 			uint32 sectorSizeRem = options->Size % options->SectorSize;
 			if (sectorSizeRem != 0)
