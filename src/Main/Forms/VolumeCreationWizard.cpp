@@ -260,7 +260,10 @@ namespace VeraCrypt
 				uint64 filesystemSize = layout->GetMaxDataSize (VolumeSize);
 
 				VolumeFormatOptionsWizardPage *page = new VolumeFormatOptionsWizardPage (GetPageParent(), filesystemSize, SectorSize,
-					OuterVolume || SelectedVolumeType != VolumeType::Hidden, OuterVolume, LargeFilesSupport);
+#ifndef TC_LINUX
+					SelectedVolumePath.IsDevice() &&
+#endif
+					(OuterVolume || SelectedVolumeType != VolumeType::Hidden), OuterVolume, LargeFilesSupport);
 
 				page->SetPageTitle (LangString["FORMAT_TITLE"]);
 				page->SetFilesystemType (SelectedFilesystemType);

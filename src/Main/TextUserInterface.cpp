@@ -689,8 +689,9 @@ namespace VeraCrypt
 					throw_err (_("Failed to get available disk space on the selected target."));
 				}
 			}
-
-
+#ifndef TC_LINUX
+			options->Quick = false;
+#endif
 			uint32 sectorSizeRem = options->Size % options->SectorSize;
 			if (sectorSizeRem != 0)
 				options->Size += options->SectorSize - sectorSizeRem;
