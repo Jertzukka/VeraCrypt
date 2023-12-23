@@ -33,6 +33,7 @@ namespace VeraCrypt
 		wxLongLong diskSpace = 0;
 		if (!wxGetDiskSpace (wxFileName (wstring (volumePath)).GetPath(), nullptr, &diskSpace))
 		{
+            std::cerr << "cant determine free disk space" << std::endl;
 			VolumeSizeTextCtrl->Disable();
 			VolumeSizeTextCtrl->SetValue (L"");
 			UseAllFreeSpaceCheckBox->Disable();
@@ -41,9 +42,13 @@ namespace VeraCrypt
 		{
 			if (!volumePath.IsDevice())
 			{
+                std::cerr << "not a device" << std::endl;
 				wxULongLong containerSizeUnsigned = wxFileName (wstring (volumePath)).GetSize();
 				if (containerSizeUnsigned != wxInvalidSize)
 					diskSpace += static_cast<wxLongLong_t>(containerSizeUnsigned.GetValue());
+                std::cerr << "diskSpace before fix: " << diskSpace.GetValue();
+                diskSpace = static_cast<wxLongLong_t>((double)diskSpace.GetValue() * 0.99);
+                std::cerr << "diskSpace after fix: " << diskSpace.GetValue();
 			}
 			AvailableDiskSpace = (uint64) diskSpace.GetValue ();
 		}
@@ -79,11 +84,13 @@ namespace VeraCrypt
 
 	uint64 VolumeSizeWizardPage::GetVolumeSize () const
 	{
+        std::cerr << "GETVOLUMESIZE RANGETVOLUMESIZE RANGETVOLUMESIZE RANGETVOLUMESIZE RANGETVOLUMESIZE RANGETVOLUMESIZE RANGETVOLUMESIZE RANGETVOLUMESIZE RANGETVOLUMESIZE RANGETVOLUMESIZE RANGETVOLUMESIZE RAN" << std::endl;
 		uint64 prefixMult = 1;
 		uint64 val;
 		if (UseAllFreeSpaceCheckBox->IsChecked ())
 		{
 			val = MaxVolumeSizeValid ? MaxVolumeSize : AvailableDiskSpace;
+            std::cerr << "val set to " << val << std::endl;
 		}
 		else
 		{
@@ -101,17 +108,24 @@ namespace VeraCrypt
 		}
 		if (val <= 0x7fffFFFFffffFFFFull / prefixMult)
 		{
+            std::cerr << "Before prefix mult" <<  val << std::endl;
 			val *= prefixMult;
+            std::cerr << "After prefix mult" <<  val << std::endl;
 
 			uint32 sectorSizeRem = val % SectorSize;
+            std::cerr << "Modulo of sectorsize" << sectorSizeRem << std::endl;
 
-			if (sectorSizeRem != 0)
-				val += SectorSize - sectorSizeRem;
+			if (sectorSizeRem != 0) {
+                val -= sectorSizeRem;
+                std::cerr << "Removing remainder to match sectorszie " <<  val << std::endl;
+            }
 
 			return val;
 		}
-		else
+		else {
+            std::cerr << "val fails" << std::endl;
 			return 0;
+        }
 	}
 
 	bool VolumeSizeWizardPage::IsValid ()
@@ -121,11 +135,14 @@ namespace VeraCrypt
 			try
 			{
 				uint64 uiVolumeSize = GetVolumeSize();
+                std::cerr << "uivolumesize" << uiVolumeSize << std::endl;
+                std::cerr << "availablaedisksapce " << AvailableDiskSpace << std::endl;
 				if (uiVolumeSize >= MinVolumeSize && (!MaxVolumeSizeValid || uiVolumeSize <= MaxVolumeSize) && (MaxVolumeSizeValid || CmdLine->ArgDisableFileSizeCheck || !AvailableDiskSpace || uiVolumeSize <= AvailableDiskSpace))
 					return true;
 			}
 			catch (...) { }
 		}
+        std::cerr << "isvalid fails" << std::endl;
 		return false;
 	}
 
