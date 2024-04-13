@@ -18,6 +18,7 @@
 #include <unistd.h>
 #include <sys/mount.h>
 #include <sys/wait.h>
+#include <iostream>
 #include "CoreLinux.h"
 #include "Platform/SystemInfo.h"
 #include "Platform/TextReader.h"
@@ -235,6 +236,7 @@ namespace VeraCrypt
 
 	MountedFilesystemList CoreLinux::GetMountedFilesystems (const DevicePath &devicePath, const DirectoryPath &mountPoint) const
 	{
+		std::cout << "CoreLinux::GetMountedFilesystems (" << string(devicePath) << ", " << string(mountPoint) << ")" << std::endl;
 		MountedFilesystemList mountedFilesystems;
 		DevicePath realDevicePath = devicePath;
 
@@ -262,21 +264,30 @@ namespace VeraCrypt
 		struct mntent *entry;
 		while ((entry = getmntent (mtab)) != nullptr)
 		{
+			//std::cout << "---------------------------------" << std::endl;
 			make_shared_auto (MountedFilesystem, mf);
 
-			if (entry->mnt_fsname)
+			if (entry->mnt_fsname)  {
 				mf->Device = DevicePath (entry->mnt_fsname);
+				//std::cout << "mf->Device: " << string(mf->Device) << std::endl;
+			}
 			else
 				continue;
 
-			if (entry->mnt_dir)
-				mf->MountPoint = DirectoryPath (entry->mnt_dir);
+			if (entry->mnt_dir) {
+				mf->MountPoint = DirectoryPath(entry->mnt_dir);
+				//std::cout << "mf->MountPoint: " << string(mf->MountPoint) << std::endl;
+			}
 
-			if (entry->mnt_type)
+			if (entry->mnt_type) {
 				mf->Type = entry->mnt_type;
+				//std::cout << "mf->Type: " << string(mf->Type) << std::endl;
+			}
 
-			if ((devicePath.IsEmpty() || devicePath == mf->Device || realDevicePath == mf->Device) && (mountPoint.IsEmpty() || mountPoint == mf->MountPoint))
-				mountedFilesystems.push_back (mf);
+			if ((devicePath.IsEmpty() || devicePath == mf->Device || realDevicePath == mf->Device) && (mountPoint.IsEmpty() || mountPoint == mf->MountPoint)) {
+				mountedFilesystems.push_back(mf);
+				//std::cout << "This device was pushed to mounted filesystems." << std::endl;
+			}
 		}
 
 		return mountedFilesystems;

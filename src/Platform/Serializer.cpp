@@ -10,6 +10,7 @@
  code distribution packages.
 */
 
+#include <iostream>
 #include "Exception.h"
 #include "ForEach.h"
 #include "Memory.h"
@@ -23,8 +24,12 @@ namespace VeraCrypt
 		uint64 size;
 		DataStream->ReadCompleteBuffer (BufferPtr ((byte *) &size, sizeof (size)));
 
-		if (Endian::Big (size) != sizeof (T))
-			throw ParameterIncorrect (SRC_POS);
+		if (Endian::Big (size) != sizeof (T)) {
+			std::cerr << "Endian big: " << Endian::Big(size) << " differs from sizeof T: " << sizeof(T) << std::endl;
+			throw ParameterIncorrect(SRC_POS);
+		} else {
+            std::cerr << "SUCCESS: Endian big: " << Endian::Big(size) << " differs from sizeof T: " << sizeof(T) << std::endl;
+        }
 
 		T data;
 		DataStream->ReadCompleteBuffer (BufferPtr ((byte *) &data, sizeof (data)));

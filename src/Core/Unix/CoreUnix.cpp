@@ -295,12 +295,14 @@ namespace VeraCrypt
 
 	VolumeInfoList CoreUnix::GetMountedVolumes (const VolumePath &volumePath) const
 	{
+		std::cout << "GetMountedVolumes (" << string(volumePath) << ")" << std::endl;
 		VolumeInfoList volumes;
 
 		foreach_ref (const MountedFilesystem &mf, GetMountedFilesystems ())
 		{
 			if (string (mf.MountPoint).find (GetFuseMountDirPrefix()) == string::npos)
 				continue;
+			std::cout << "FUSE prefix found on Device: " << string(mf.Device) << " MountPoint: " << string(mf.MountPoint) << " Type: " << string(mf.Type) << std::endl;
 
 			shared_ptr <VolumeInfo> mountedVol;
 			try
@@ -313,6 +315,7 @@ namespace VeraCrypt
 			}
 			catch (...)
 			{
+				std::cout << "We failed to find controlfile for this FUSE mount!" << std::endl;
 				continue;
 			}
 
