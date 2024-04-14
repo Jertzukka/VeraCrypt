@@ -279,14 +279,17 @@ namespace VeraCrypt
 		foreach (const string &virtualdevice, virtualdevicestoremove) {
 				std::cerr << "Dismounting Virtual Device: " << virtualdevice << std::endl;
 				CoreService::RequestDismountFilesystem(virtualdevice, false);
+                //CoreDirect->DismountFilesystem(virtualdevice, false);
 				std::cerr << "Removing DevMapper for: " << virtualdevice << std::endl;
 				CoreService::RequestDevMapperRemoval(virtualdevice);
+				//CoreDirect->RemoveDevMapper(virtualdevice);
 			}
 
 		foreach (const string &auxmnt, auxmntstoremove) {
 				std::cerr << "Dismounting AuxMountPoint: " << auxmnt << std::endl;
-				CoreService::RequestDismountFilesystem(auxmnt, false);
-		}
+                CoreService::RequestDismountFilesystem(auxmnt, false);
+                //CoreDirect->DismountFilesystem(auxmnt, false);
+			}
 	}
 
 	MountedFilesystemList CoreLinux::GetMountedFilesystems (const DevicePath &devicePath, const DirectoryPath &mountPoint) const
