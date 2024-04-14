@@ -82,6 +82,26 @@ namespace VeraCrypt
 		sr.Serialize ("MountPoint", wstring (MountPoint));
 	}
 
+	// DevMapperRemovalRequest
+	void DevMapperRemovalRequest::Deserialize (shared_ptr <Stream> stream)
+	{
+		CoreServiceRequest::Deserialize (stream);
+		Serializer sr (stream);
+		sr.Deserialize("DevMapName", DevMapName);
+	}
+
+	bool DevMapperRemovalRequest::RequiresElevation () const
+	{
+		return !Core->HasAdminPrivileges();
+	}
+
+	void DevMapperRemovalRequest::Serialize (shared_ptr <Stream> stream) const
+	{
+		CoreServiceRequest::Serialize (stream);
+		Serializer sr (stream);
+		sr.Serialize("DevMapName", DevMapName);
+	}
+
 	// DismountVolumeRequest
 	void DismountVolumeRequest::Deserialize (shared_ptr <Stream> stream)
 	{
@@ -263,6 +283,7 @@ namespace VeraCrypt
 	TC_SERIALIZER_FACTORY_ADD_CLASS (CoreServiceRequest);
 	TC_SERIALIZER_FACTORY_ADD_CLASS (CheckFilesystemRequest);
 	TC_SERIALIZER_FACTORY_ADD_CLASS (DismountFilesystemRequest);
+	TC_SERIALIZER_FACTORY_ADD_CLASS (DevMapperRemovalRequest);
 	TC_SERIALIZER_FACTORY_ADD_CLASS (DismountVolumeRequest);
 	TC_SERIALIZER_FACTORY_ADD_CLASS (ExitRequest);
 	TC_SERIALIZER_FACTORY_ADD_CLASS (GetDeviceSectorSizeRequest);

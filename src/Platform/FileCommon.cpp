@@ -16,6 +16,8 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <utime.h>
+#include <iostream>
+
 #endif
 
 namespace VeraCrypt
@@ -69,6 +71,7 @@ namespace VeraCrypt
 
 	void File::ReadCompleteBuffer (const BufferPtr &buffer) const
 	{
+		//std::cerr << "File (" << string(this->GetPath()) << ") to read size: " << buffer.Size() << std::endl;
 		size_t dataLeft = buffer.Size();
 		size_t offset = 0;
 

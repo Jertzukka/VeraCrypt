@@ -34,6 +34,12 @@ namespace VeraCrypt
 		TC_SERIALIZABLE (DismountFilesystemResponse);
 	};
 
+	struct RemoveDevMapperResponse : CoreServiceResponse
+	{
+		RemoveDevMapperResponse () { }
+		TC_SERIALIZABLE (RemoveDevMapperResponse);
+	};
+
 	struct DismountVolumeResponse : CoreServiceResponse
 	{
 		DismountVolumeResponse () { }

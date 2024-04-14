@@ -35,6 +35,16 @@ namespace VeraCrypt
 		Serializable::Serialize (stream);
 	}
 
+	// RemoveDevMapperResponse
+	void RemoveDevMapperResponse::Deserialize (shared_ptr <Stream> stream)
+	{
+	}
+
+	void RemoveDevMapperResponse::Serialize (shared_ptr <Stream> stream) const
+	{
+		Serializable::Serialize (stream);
+	}
+
 	// DismountVolumeResponse
 	void DismountVolumeResponse::Deserialize (shared_ptr <Stream> stream)
 	{
@@ -114,6 +124,7 @@ namespace VeraCrypt
 
 	TC_SERIALIZER_FACTORY_ADD_CLASS (CheckFilesystemResponse);
 	TC_SERIALIZER_FACTORY_ADD_CLASS (DismountFilesystemResponse);
+	TC_SERIALIZER_FACTORY_ADD_CLASS (RemoveDevMapperResponse);
 	TC_SERIALIZER_FACTORY_ADD_CLASS (DismountVolumeResponse);
 	TC_SERIALIZER_FACTORY_ADD_CLASS (GetDeviceSectorSizeResponse);
 	TC_SERIALIZER_FACTORY_ADD_CLASS (GetDeviceSizeResponse);

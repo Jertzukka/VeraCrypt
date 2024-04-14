@@ -200,6 +200,10 @@ namespace VeraCrypt
 			if (!FuseService::CheckAccessRights())
 				return -EACCES;
 
+            //stringstream pathss;
+            //pathss << "fuse_service_read (" << path << ") of size " << size << std::endl;
+            //SystemLog::WriteDebug(pathss.str());
+
 			if (strcmp (path, FuseService::GetVolumeImagePath()) == 0)
 			{
 				try
@@ -268,6 +272,10 @@ namespace VeraCrypt
 			if (!FuseService::CheckAccessRights())
 				return -EACCES;
 
+            stringstream pathss;
+            pathss << "fuse_service_readdir (" << path << ")" << std::endl;
+            SystemLog::WriteDebug(pathss.str());
+
 			if (strcmp (path, "/") != 0)
 				return -ENOENT;
 
@@ -291,7 +299,11 @@ namespace VeraCrypt
 			if (!FuseService::CheckAccessRights())
 				return -EACCES;
 
-			if (strcmp (path, FuseService::GetVolumeImagePath()) == 0)
+            stringstream pathss;
+            pathss << "fuse_service_write (" << path << ") of size " << size << std::endl;
+            SystemLog::WriteDebug(pathss.str());
+
+            if (strcmp (path, FuseService::GetVolumeImagePath()) == 0)
 			{
 				FuseService::WriteVolumeSectors (BufferPtr ((byte *) buf, size), offset);
 				return size;
@@ -489,6 +501,10 @@ namespace VeraCrypt
 
 	void FuseService::SendAuxDeviceInfo (const DirectoryPath &fuseMountPoint, const DevicePath &virtualDevice, const DevicePath &loopDevice)
 	{
+        stringstream pathss;
+        pathss << "FuseService::SendAuxDeviceInfo (fuseMountPoint " << string(fuseMountPoint) << ", virtualDevice " << string(virtualDevice) << ", loopDevice "<< string(loopDevice) << ")" << std::endl;
+        SystemLog::WriteDebug(pathss.str());
+
 		File fuseServiceControl;
 		fuseServiceControl.Open (string (fuseMountPoint) + GetControlPath(), File::OpenWrite);
 
@@ -510,6 +526,9 @@ namespace VeraCrypt
 
 	void FuseService::OnSignal (int signal)
 	{
+        stringstream pathss;
+        pathss << "Received signal " << signal << ", dismounting mounted volume at Slot " << SlotNumber << std::endl;
+        SystemLog::WriteDebug(pathss.str());
 		try
 		{
 			shared_ptr <VolumeInfo> volume = Core->GetMountedVolume (SlotNumber);

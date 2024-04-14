@@ -10,6 +10,7 @@
  code distribution packages.
 */
 
+#include <iostream>
 #include "Common/Tcdefs.h"
 #include "VolumeInfo.h"
 #include "Platform/SerializerFactory.h"
@@ -120,6 +121,38 @@ namespace VeraCrypt
 		TotalDataWritten = volume.GetTotalDataWritten();
 		Pim = volume.GetPim ();
 	}
+
+    void VolumeInfo::Print() const {
+        std::cerr << "Printing VolumeInfo - ";
+        std::cerr << " | ProgramVersion: " << this->ProgramVersion;
+        std::wcerr << " | AuxMountPoint: " << wstring(this->AuxMountPoint);
+        std::cerr << " | EncryptionAlgorithmBlockSize: " << this->EncryptionAlgorithmBlockSize;
+        std::cerr << " | EncryptionAlgorithmKeySize: " << this->EncryptionAlgorithmKeySize;
+        std::cerr << " | EncryptionAlgorithmMinBlockSize: " << this->EncryptionAlgorithmMinBlockSize;
+        std::wcerr << " | EncryptionAlgorithmName: " << wstring(this->EncryptionAlgorithmName);
+        std::wcerr << " | EncryptionModeName: " << wstring(this->EncryptionModeName);
+        std::cerr << " | HeaderCreationTime: " << this->HeaderCreationTime;
+        std::cerr << " | HiddenVolumeProtectionTriggered: " << this->HiddenVolumeProtectionTriggered;
+        std::wcerr << " | LoopDevice: " << wstring(this->LoopDevice);
+        std::cerr << " | MinRequiredProgramVersion: " << this->MinRequiredProgramVersion;
+        std::wcerr << " | MountPoint: " << wstring(this->MountPoint);
+        std::wcerr << " | Path: " << wstring(this->Path);
+        std::cerr << " | Pkcs5IterationCount: " << this->Pkcs5IterationCount;
+        std::wcerr << " | Pkcs5PrfName: " << wstring(this->Pkcs5PrfName);
+        std::cerr << " | Protection: " << static_cast <VolumeProtection::Enum> (this->Protection);
+        std::cerr << " | SerialInstanceNumber: " << this->SerialInstanceNumber;
+        std::cerr << " | Size: " << this->Size;
+        std::cerr << " | SlotNumber: " << this->SlotNumber;
+        std::cerr << " | SystemEncryption: " << this->SystemEncryption;
+        std::cerr << " | TopWriteOffset: " << this->TopWriteOffset;
+        std::cerr << " | TotalDataRead: " << this->TotalDataRead;
+        std::cerr << " | TotalDataWritten: " << this->TotalDataWritten;
+        std::cerr << " | Type: " << static_cast <VolumeType::Enum> (this->Type);
+        std::wcerr << " | VirtualDevice: " << wstring(this->VirtualDevice);
+        std::cerr << " | VolumeCreationTime: " << this->VolumeCreationTime;
+        std::cerr << " | Pim: " << this->Pim;
+        std::cerr << std::endl;
+    }
 
 	TC_SERIALIZER_FACTORY_ADD_CLASS (VolumeInfo);
 }

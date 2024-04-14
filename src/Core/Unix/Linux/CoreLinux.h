@@ -29,7 +29,8 @@ namespace VeraCrypt
 	protected:
 		virtual DevicePath AttachFileToLoopDevice (const FilePath &filePath, bool readOnly) const;
 		virtual void DetachLoopDevice (const DevicePath &devicePath) const;
-		virtual void DismountNativeVolume (shared_ptr <VolumeInfo> mountedVolume) const;
+        virtual void DismountMountsWithoutControls(const VolumeInfoList volumes) const;
+        virtual void DismountNativeVolume (shared_ptr <VolumeInfo> mountedVolume) const;
 		virtual MountedFilesystemList GetMountedFilesystems (const DevicePath &devicePath = DevicePath(), const DirectoryPath &mountPoint = DirectoryPath()) const;
 		virtual void MountFilesystem (const DevicePath &devicePath, const DirectoryPath &mountPoint, const string &filesystemType, bool readOnly, const string &systemMountOptions) const;
 		virtual void MountVolumeNative (shared_ptr <Volume> volume, MountOptions &options, const DirectoryPath &auxMountPoint) const;

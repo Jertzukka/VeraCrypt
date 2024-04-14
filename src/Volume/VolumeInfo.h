@@ -32,6 +32,7 @@ namespace VeraCrypt
 		TC_SERIALIZABLE (VolumeInfo);
 		static bool FirstVolumeMountedAfterSecond (shared_ptr <VolumeInfo> first, shared_ptr <VolumeInfo> second);
 		void Set (const Volume &volume);
+		void Print () const;
 
 		// Modifying this structure can introduce incompatibility with previous versions
 		DirectoryPath AuxMountPoint;

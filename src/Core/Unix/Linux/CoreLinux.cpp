@@ -28,6 +28,8 @@
 #endif
 #include "Driver/Fuse/FuseService.h"
 #include "Core/Unix/CoreServiceProxy.h"
+#include "Platform/SystemLog.h"
+#include <algorithm>
 
 namespace VeraCrypt
 {
@@ -41,6 +43,10 @@ namespace VeraCrypt
 
 	DevicePath CoreLinux::AttachFileToLoopDevice (const FilePath &filePath, bool readOnly) const
 	{
+        stringstream pathss;
+        pathss << "CoreLinux::AttachFileToLoopDevice (filePath " << string(filePath) << ", readOnly " << readOnly << ")" << std::endl;
+        SystemLog::WriteError(pathss.str());
+
 		list <string> loopPaths;
 		loopPaths.push_back ("/dev/loop");
 		loopPaths.push_back ("/dev/loop/");
@@ -234,9 +240,58 @@ namespace VeraCrypt
 		return devices;
 	}
 
+	void CoreLinux::DismountMountsWithoutControls(const VolumeInfoList volumes) const {
+		std::cerr << "Attempting to dismount all VeraCrypt mounts without corresponding FUSE control files." << std::endl;
+		std::vector<string> auxmntstokeep = {};
+		std::vector<string> virtualdevicestokeep = {};
+
+		std::vector<string> auxmntstoremove = {};
+		std::vector<string> virtualdevicestoremove = {};
+
+		foreach_ref (const VolumeInfo &volumeinfo, volumes) {
+			auxmntstokeep.push_back(volumeinfo.AuxMountPoint);
+			virtualdevicestokeep.push_back(volumeinfo.VirtualDevice);
+			std::cerr << "Volume set to keep: AuxMountPoint: " << string(volumeinfo.AuxMountPoint) << ", VirtualDevice: " << string(volumeinfo.VirtualDevice) << std::endl;
+		}
+
+		MountedFilesystemList mountedfslist = GetMountedFilesystems();
+		foreach_ref (const MountedFilesystem &mountedfs, mountedfslist) {
+			string virtualdevice = mountedfs.Device;
+			string mountpoint = mountedfs.MountPoint;
+
+			if (virtualdevice.find("/dev/mapper/veracrypt") == 0) {
+				if (std::find(virtualdevicestokeep.begin(), virtualdevicestokeep.end(), virtualdevice) == virtualdevicestokeep.end()) {
+					virtualdevicestoremove.push_back(virtualdevice);
+					std::cerr << "VirtualDevice " << virtualdevice << " set to be dismounted." << std::endl;
+				}
+				continue;
+			}
+
+			if (mountpoint.find("/tmp/.veracrypt_aux_mnt") == 0) {
+				if (std::find(auxmntstokeep.begin(), auxmntstokeep.end(), mountpoint) == auxmntstokeep.end()) {
+					auxmntstoremove.push_back(mountpoint);
+					std::cerr << "AuxMountPoint " << mountpoint << " set to be dismounted." << std::endl;
+				}
+				continue;
+			}
+		}
+
+		foreach (const string &virtualdevice, virtualdevicestoremove) {
+				std::cerr << "Dismounting Virtual Device: " << virtualdevice << std::endl;
+				CoreService::RequestDismountFilesystem(virtualdevice, false);
+				std::cerr << "Removing DevMapper for: " << virtualdevice << std::endl;
+				CoreService::RequestDevMapperRemoval(virtualdevice);
+			}
+
+		foreach (const string &auxmnt, auxmntstoremove) {
+				std::cerr << "Dismounting AuxMountPoint: " << auxmnt << std::endl;
+				CoreService::RequestDismountFilesystem(auxmnt, false);
+		}
+	}
+
 	MountedFilesystemList CoreLinux::GetMountedFilesystems (const DevicePath &devicePath, const DirectoryPath &mountPoint) const
 	{
-		std::cout << "CoreLinux::GetMountedFilesystems (" << string(devicePath) << ", " << string(mountPoint) << ")" << std::endl;
+		std::cerr << "CoreLinux::GetMountedFilesystems (" << string(devicePath) << ", " << string(mountPoint) << ")" << std::endl;
 		MountedFilesystemList mountedFilesystems;
 		DevicePath realDevicePath = devicePath;
 

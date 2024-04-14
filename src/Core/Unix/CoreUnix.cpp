@@ -21,6 +21,7 @@
 #include "Platform/FileStream.h"
 #include "Driver/Fuse/FuseService.h"
 #include "Volume/VolumePasswordCache.h"
+#include "Platform/SystemLog.h"
 
 namespace VeraCrypt
 {
@@ -189,6 +190,33 @@ namespace VeraCrypt
 		return mountedVolume;
 	}
 
+	void CoreUnix::RemoveDevMapper (const string& devMapName) const
+	{
+		stringstream pathss;
+		pathss << "Core Service received request to remove dev mapper: " << devMapName << std::endl;
+		SystemLog::WriteError(pathss.str());
+
+		list <string> dmsetupArgs;
+		dmsetupArgs.push_back ("remove");
+		dmsetupArgs.push_back (StringConverter::Split (devMapName, "/").back());
+
+		for (int t = 0; true; t++)
+		{
+			try
+			{
+				Process::Execute ("dmsetup", dmsetupArgs);
+				break;
+			}
+			catch (...)
+			{
+				if (t > 20)
+					throw;
+
+				Thread::Sleep (100);
+			}
+		}
+	}
+
 	bool CoreUnix::FilesystemSupportsLargeFiles (const FilePath &filePath) const
 	{
 		string path = filePath;
@@ -295,14 +323,15 @@ namespace VeraCrypt
 
 	VolumeInfoList CoreUnix::GetMountedVolumes (const VolumePath &volumePath) const
 	{
-		std::cout << "GetMountedVolumes (" << string(volumePath) << ")" << std::endl;
+		std::cerr << "GetMountedVolumes (" << string(volumePath) << ")" << std::endl;
 		VolumeInfoList volumes;
+		bool mountsWithoutControls = false;
 
 		foreach_ref (const MountedFilesystem &mf, GetMountedFilesystems ())
 		{
 			if (string (mf.MountPoint).find (GetFuseMountDirPrefix()) == string::npos)
 				continue;
-			std::cout << "FUSE prefix found on Device: " << string(mf.Device) << " MountPoint: " << string(mf.MountPoint) << " Type: " << string(mf.Type) << std::endl;
+			std::cerr << "FUSE prefix found on Device: " << string(mf.Device) << " MountPoint: " << string(mf.MountPoint) << " Type: " << string(mf.Type) << std::endl;
 
 			shared_ptr <VolumeInfo> mountedVol;
 			try
@@ -315,7 +344,7 @@ namespace VeraCrypt
 			}
 			catch (...)
 			{
-				std::cout << "We failed to find controlfile for this FUSE mount!" << std::endl;
+				mountsWithoutControls = true;
 				continue;
 			}
 
@@ -333,11 +362,13 @@ namespace VeraCrypt
 			}
 
 			volumes.push_back (mountedVol);
+            mountedVol->Print();
 
-			if (!volumePath.IsEmpty())
+            if (!volumePath.IsEmpty())
 				break;
 		}
 
+		if (mountsWithoutControls) DismountMountsWithoutControls(volumes);
 		return volumes;
 	}
 
@@ -530,6 +561,10 @@ namespace VeraCrypt
 
 	shared_ptr <VolumeInfo> CoreUnix::MountVolume (MountOptions &options)
 	{
+        stringstream pathss;
+        pathss << "CoreUnix::MountVolume (options " << options.Path << ")" << std::endl;
+        SystemLog::WriteDebug(pathss.str());
+
 		CoalesceSlotNumberAndMountPoint (options);
 
 		if (IsVolumeMounted (*options.Path))
@@ -728,6 +763,10 @@ namespace VeraCrypt
 
 	void CoreUnix::MountAuxVolumeImage (const DirectoryPath &auxMountPoint, const MountOptions &options) const
 	{
+        stringstream pathss;
+        pathss << "CoreUnix::MountAuxVolumeImage (auxMountPoint " << string(auxMountPoint) << ", options " << options.Path << ")" << std::endl;
+        SystemLog::WriteDebug(pathss.str());
+
 		DevicePath loopDev = AttachFileToLoopDevice (string (auxMountPoint) + FuseService::GetVolumeImagePath(), options.Protection == VolumeProtection::ReadOnly);
 
 		try
