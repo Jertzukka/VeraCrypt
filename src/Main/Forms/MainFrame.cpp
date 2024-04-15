@@ -1666,12 +1666,18 @@ namespace VeraCrypt
 
 	void MainFrame::UpdateVolumeList ()
 	{
+        std::cerr << "updating" << std::endl;
 		static Mutex mutex;
 		ScopeLock lock (mutex);
 
 		bool listChanged = false;
 
-		MountedVolumes = Core->GetMountedVolumes();
+		try {
+			MountedVolumes = Core->GetMountedVolumes();
+		} catch (MountsWithoutControls&) {
+			MountedVolumes = Core->GetMountedVolumes();
+			if (Gui->AskYesNo("MountsWithoutControls", true, true)) Core->DismountMountsWithoutControls(MountedVolumes);
+		}
 
 		map < VolumeSlotNumber, shared_ptr <VolumeInfo> > mountedVolumesMap;
 		foreach (shared_ptr <VolumeInfo> volume, MountedVolumes)
