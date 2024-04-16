@@ -1673,10 +1673,10 @@ namespace VeraCrypt
 		bool listChanged = false;
 
 		try {
-			MountedVolumes = Core->GetMountedVolumes();
+			MountedVolumes = Core->GetMountedVolumes({}, true);
 		} catch (MountsWithoutControls&) {
 			MountedVolumes = Core->GetMountedVolumes();
-			if (Gui->AskYesNo("MountsWithoutControls", true, true)) Core->DismountMountsWithoutControls(MountedVolumes);
+			if (Gui->AskYesNo(LangString["LINUX_MISSING_CONTROL_FILES_REMOUNT"], true, true)) Core->DismountMountsWithoutControls(MountedVolumes);
 		}
 
 		map < VolumeSlotNumber, shared_ptr <VolumeInfo> > mountedVolumesMap;

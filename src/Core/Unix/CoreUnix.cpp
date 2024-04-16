@@ -323,11 +323,10 @@ namespace VeraCrypt
 		return mountedFilesystems.front()->MountPoint;
 	}
 
-	VolumeInfoList CoreUnix::GetMountedVolumes (const VolumePath &volumePath) const
+	VolumeInfoList CoreUnix::GetMountedVolumes (const VolumePath &volumePath, bool throwing) const
 	{
 		std::cerr << "GetMountedVolumes (" << string(volumePath) << ")" << std::endl;
 		VolumeInfoList volumes;
-		static bool mountsWithoutControlsThrown = false;
 
 		foreach_ref (const MountedFilesystem &mf, GetMountedFilesystems ())
 		{
@@ -336,19 +335,22 @@ namespace VeraCrypt
 			std::cerr << "FUSE prefix found on Device: " << string(mf.Device) << " MountPoint: " << string(mf.MountPoint) << " Type: " << string(mf.Type) << std::endl;
 
 			shared_ptr <VolumeInfo> mountedVol;
-            shared_ptr <File> controlFile (new File);
-            try {
+			shared_ptr <File> controlFile (new File);
+			try {
 				controlFile->Open (string (mf.MountPoint) + FuseService::GetControlPath());
-            }
-            catch (...)
-            {
-				if (!mountsWithoutControlsThrown) {
-					mountsWithoutControlsThrown = true;
-					throw MountsWithoutControls(SRC_POS);
+			}
+			catch (...)
+			{
+				if (throwing) {
+					static bool thrownalready = false;
+					if (!thrownalready) {
+						thrownalready = true;
+						throw MountsWithoutControls(SRC_POS);
+					}
 				} else continue;
-            }
+			}
 
-            try {
+			try {
 				shared_ptr <Stream> controlFileStream (new FileStream (controlFile));
 				mountedVol = Serializable::DeserializeNew <VolumeInfo> (controlFileStream);
 			}
