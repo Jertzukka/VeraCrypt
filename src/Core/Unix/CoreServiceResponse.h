@@ -34,10 +34,10 @@ namespace VeraCrypt
 		TC_SERIALIZABLE (DismountFilesystemResponse);
 	};
 
-	struct RemoveDevMapperResponse : CoreServiceResponse
+	struct RemoveDeviceMapperResponse : CoreServiceResponse
 	{
-		RemoveDevMapperResponse () { }
-		TC_SERIALIZABLE (RemoveDevMapperResponse);
+		RemoveDeviceMapperResponse () { }
+		TC_SERIALIZABLE (RemoveDeviceMapperResponse);
 	};
 
 	struct DismountVolumeResponse : CoreServiceResponse

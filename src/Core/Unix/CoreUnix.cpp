@@ -192,7 +192,7 @@ namespace VeraCrypt
 		return mountedVolume;
 	}
 
-	void CoreUnix::RemoveDevMapper (const string& devMapName) const
+	void CoreUnix::RemoveDeviceMapper (const string& devMapName) const
 	{
 		stringstream pathss;
 		pathss << "Core Service received request to remove dev mapper: " << devMapName << std::endl;
@@ -346,7 +346,7 @@ namespace VeraCrypt
 					static bool thrownalready = false;
 					if (!thrownalready) {
 						thrownalready = true;
-						throw MountsWithoutControls(SRC_POS);
+						throw VolumeControlFileUnavailable(SRC_POS);
 					}
 				} else continue;
 			}
@@ -570,7 +570,7 @@ namespace VeraCrypt
 		return GetFirstFreeSlotNumber();
 	}
 
-    void CoreUnix::DismountMountsWithoutControls(const VolumeInfoList volumes) const {
+    void CoreUnix::DismountVolumesWithoutControlFiles(const VolumeInfoList volumes) const {
         //if (!Gui->AskYesNo ("It appears that your FUSE control files have been lost. Want to dismount these devices?", true, true))
         //    return;
         //Core->WarningEvent.Raise (args);
@@ -614,7 +614,7 @@ namespace VeraCrypt
                 std::cerr << "Dismounting Virtual Device: " << virtualdevice << std::endl;
                 DismountFilesystem(virtualdevice, false);
                 std::cerr << "Removing DevMapper for: " << virtualdevice << std::endl;
-                RemoveDevMapper(virtualdevice);
+                RemoveDeviceMapper(virtualdevice);
             }
 
         foreach (const string &auxmnt, auxmntstoremove) {

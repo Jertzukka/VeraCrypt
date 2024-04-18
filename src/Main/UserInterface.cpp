@@ -1646,8 +1646,8 @@ namespace VeraCrypt
 		VC_CONVERT_EXCEPTION (UnsupportedSectorSizeHiddenVolumeProtection);
 		VC_CONVERT_EXCEPTION (UnsupportedSectorSizeNoKernelCrypto);
 		VC_CONVERT_EXCEPTION (VolumeAlreadyMounted);
+		VC_CONVERT_EXCEPTION (VolumeControlFileUnavailable);
 		VC_CONVERT_EXCEPTION (VolumeSlotUnavailable);
-        VC_CONVERT_EXCEPTION (MountsWithoutControls);
 		VC_CONVERT_EXCEPTION (UserInterfaceException);
 		VC_CONVERT_EXCEPTION (MissingArgument);
 		VC_CONVERT_EXCEPTION (NoItemSelected);

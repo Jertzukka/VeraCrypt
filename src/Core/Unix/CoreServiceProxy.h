@@ -35,11 +35,6 @@ namespace VeraCrypt
 			CoreService::RequestDismountFilesystem (mountPoint, force);
 		}
 
-		virtual void RemoveDevMapper (const string& devMapName) const
-		{
-			CoreService::RequestDevMapperRemoval(devMapName);
-		}
-
 		virtual shared_ptr <VolumeInfo> DismountVolume (shared_ptr <VolumeInfo> mountedVolume, bool ignoreOpenFiles = false, bool syncVolumeInfo = false)
 		{
 			shared_ptr <VolumeInfo> dismountedVolumeInfo = CoreService::RequestDismountVolume (mountedVolume, ignoreOpenFiles, syncVolumeInfo);

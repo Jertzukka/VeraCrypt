@@ -144,13 +144,13 @@ namespace VeraCrypt
 						continue;
 					}
 
-					// DevMapperRemovalRequest
-					DevMapperRemovalRequest *devMapperRemovalRequest = dynamic_cast <DevMapperRemovalRequest*> (request.get());
-					if (devMapperRemovalRequest)
+					// RemoveDeviceMapperRequest
+                    RemoveDeviceMapperRequest *removeDeviceMapperRequest = dynamic_cast <RemoveDeviceMapperRequest*> (request.get());
+					if (removeDeviceMapperRequest)
 					{
-						Core->RemoveDevMapper (devMapperRemovalRequest->DevMapName);
+						Core->RemoveDeviceMapper (removeDeviceMapperRequest->DevMapName);
 
-						RemoveDevMapperResponse().Serialize (outputStream);
+						RemoveDeviceMapperResponse().Serialize (outputStream);
 						continue;
 					}
 
@@ -257,10 +257,10 @@ namespace VeraCrypt
 		return SendRequest <DismountVolumeResponse> (request)->DismountedVolumeInfo;
 	}
 
-	void CoreService::RequestDevMapperRemoval (const string& devMapName)
+	void CoreService::RequestRemoveDeviceMapper (const string& devMapName)
 	{
-		DevMapperRemovalRequest request (devMapName);
-		SendRequest <RemoveDevMapperResponse> (request);
+		RemoveDeviceMapperRequest request (devMapName);
+		SendRequest <RemoveDeviceMapperResponse> (request);
 	}
 
 	uint32 CoreService::RequestGetDeviceSectorSize (const DevicePath &devicePath)

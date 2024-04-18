@@ -57,12 +57,12 @@ namespace VeraCrypt
 		DirectoryPath MountPoint;
 	};
 
-	struct DevMapperRemovalRequest : CoreServiceRequest
+	struct RemoveDeviceMapperRequest : CoreServiceRequest
 	{
-		DevMapperRemovalRequest () { }
-		DevMapperRemovalRequest (const string& devMapName)
+        RemoveDeviceMapperRequest () { }
+        RemoveDeviceMapperRequest (const string& devMapName)
 				: DevMapName (devMapName) { }
-		TC_SERIALIZABLE (DevMapperRemovalRequest);
+		TC_SERIALIZABLE (RemoveDeviceMapperRequest);
 
 		virtual bool RequiresElevation () const;
 

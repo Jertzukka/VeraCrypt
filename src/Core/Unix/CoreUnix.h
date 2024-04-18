@@ -28,7 +28,7 @@ namespace VeraCrypt
 
 		virtual void CheckFilesystem (shared_ptr <VolumeInfo> mountedVolume, bool repair = false) const;
 		virtual void DismountFilesystem (const DirectoryPath &mountPoint, bool force) const;
-		virtual void RemoveDevMapper (const string& devMapName) const;
+		virtual void RemoveDeviceMapper (const string& devMapName) const;
 		virtual shared_ptr <VolumeInfo> DismountVolume (shared_ptr <VolumeInfo> mountedVolume, bool ignoreOpenFiles = false, bool syncVolumeInfo = false);
 		virtual bool FilesystemSupportsLargeFiles (const FilePath &filePath) const;
 		virtual DirectoryPath GetDeviceMountPoint (const DevicePath &devicePath) const;
@@ -53,7 +53,7 @@ namespace VeraCrypt
 	protected:
 		virtual DevicePath AttachFileToLoopDevice (const FilePath &filePath, bool readOnly) const { throw NotApplicable (SRC_POS); }
 		virtual void DetachLoopDevice (const DevicePath &devicePath) const { throw NotApplicable (SRC_POS); }
-        virtual void DismountMountsWithoutControls(const VolumeInfoList volumes) const;
+        virtual void DismountVolumesWithoutControlFiles(const VolumeInfoList volumes) const;
 		virtual void DismountNativeVolume (shared_ptr <VolumeInfo> mountedVolume) const { throw NotApplicable (SRC_POS); }
         virtual bool FilesystemSupportsUnixPermissions (const DevicePath &devicePath) const;
 		virtual string GetDefaultMountPointPrefix () const;

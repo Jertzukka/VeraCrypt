@@ -28,7 +28,7 @@ namespace VeraCrypt
 		static void ProcessRequests (int inputFD = -1, int outputFD = -1);
 		static void RequestCheckFilesystem (shared_ptr <VolumeInfo> mountedVolume, bool repair);
 		static void RequestDismountFilesystem (const DirectoryPath &mountPoint, bool force);
-		static void RequestDevMapperRemoval (const string& devMapName);
+		static void RequestRemoveDeviceMapper (const string& devMapName);
 		static shared_ptr <VolumeInfo> RequestDismountVolume (shared_ptr <VolumeInfo> mountedVolume, bool ignoreOpenFiles = false, bool syncVolumeInfo = false);
 		static uint32 RequestGetDeviceSectorSize (const DevicePath &devicePath);
 		static uint64 RequestGetDeviceSize (const DevicePath &devicePath);
