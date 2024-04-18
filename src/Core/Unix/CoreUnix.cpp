@@ -570,58 +570,54 @@ namespace VeraCrypt
 		return GetFirstFreeSlotNumber();
 	}
 
-    void CoreUnix::DismountVolumesWithoutControlFiles(const VolumeInfoList volumes) const {
-        //if (!Gui->AskYesNo ("It appears that your FUSE control files have been lost. Want to dismount these devices?", true, true))
-        //    return;
-        //Core->WarningEvent.Raise (args);
+	void CoreUnix::DismountVolumesWithoutControlFiles(const VolumeInfoList volumes) const {
+		std::cerr << "Attempting to dismount all VeraCrypt mounts without corresponding FUSE control files." << std::endl;
+		std::vector<string> auxmntstokeep = {};
+		std::vector<string> virtualdevicestokeep = {};
 
-        std::cerr << "Attempting to dismount all VeraCrypt mounts without corresponding FUSE control files." << std::endl;
-        std::vector<string> auxmntstokeep = {};
-        std::vector<string> virtualdevicestokeep = {};
+		std::vector<string> auxmntstoremove = {};
+		std::vector<string> virtualdevicestoremove = {};
 
-        std::vector<string> auxmntstoremove = {};
-        std::vector<string> virtualdevicestoremove = {};
+		foreach_ref (const VolumeInfo &volumeinfo, volumes) {
+				auxmntstokeep.push_back(volumeinfo.AuxMountPoint);
+				virtualdevicestokeep.push_back(volumeinfo.VirtualDevice);
+				std::cerr << "Volume set to keep: AuxMountPoint: " << string(volumeinfo.AuxMountPoint) << ", VirtualDevice: " << string(volumeinfo.VirtualDevice) << std::endl;
+			}
 
-        foreach_ref (const VolumeInfo &volumeinfo, volumes) {
-                auxmntstokeep.push_back(volumeinfo.AuxMountPoint);
-                virtualdevicestokeep.push_back(volumeinfo.VirtualDevice);
-                std::cerr << "Volume set to keep: AuxMountPoint: " << string(volumeinfo.AuxMountPoint) << ", VirtualDevice: " << string(volumeinfo.VirtualDevice) << std::endl;
-            }
+		MountedFilesystemList mountedfslist = GetMountedFilesystems();
+		foreach_ref (const MountedFilesystem &mountedfs, mountedfslist) {
+				string virtualdevice = mountedfs.Device;
+				string mountpoint = mountedfs.MountPoint;
 
-        MountedFilesystemList mountedfslist = GetMountedFilesystems();
-        foreach_ref (const MountedFilesystem &mountedfs, mountedfslist) {
-                string virtualdevice = mountedfs.Device;
-                string mountpoint = mountedfs.MountPoint;
+				if (virtualdevice.find("/dev/mapper/veracrypt") == 0) {
+					if (std::find(virtualdevicestokeep.begin(), virtualdevicestokeep.end(), virtualdevice) == virtualdevicestokeep.end()) {
+						virtualdevicestoremove.push_back(virtualdevice);
+						std::cerr << "VirtualDevice " << virtualdevice << " set to be dismounted." << std::endl;
+					}
+					continue;
+				}
 
-                if (virtualdevice.find("/dev/mapper/veracrypt") == 0) {
-                    if (std::find(virtualdevicestokeep.begin(), virtualdevicestokeep.end(), virtualdevice) == virtualdevicestokeep.end()) {
-                        virtualdevicestoremove.push_back(virtualdevice);
-                        std::cerr << "VirtualDevice " << virtualdevice << " set to be dismounted." << std::endl;
-                    }
-                    continue;
-                }
+				if (mountpoint.find("/tmp/.veracrypt_aux_mnt") == 0) {
+					if (std::find(auxmntstokeep.begin(), auxmntstokeep.end(), mountpoint) == auxmntstokeep.end()) {
+						auxmntstoremove.push_back(mountpoint);
+						std::cerr << "AuxMountPoint " << mountpoint << " set to be dismounted." << std::endl;
+					}
+					continue;
+				}
+			}
 
-                if (mountpoint.find("/tmp/.veracrypt_aux_mnt") == 0) {
-                    if (std::find(auxmntstokeep.begin(), auxmntstokeep.end(), mountpoint) == auxmntstokeep.end()) {
-                        auxmntstoremove.push_back(mountpoint);
-                        std::cerr << "AuxMountPoint " << mountpoint << " set to be dismounted." << std::endl;
-                    }
-                    continue;
-                }
-            }
+		foreach (const string &virtualdevice, virtualdevicestoremove) {
+				std::cerr << "Dismounting Virtual Device: " << virtualdevice << std::endl;
+				DismountFilesystem(virtualdevice, false);
+				std::cerr << "Removing DevMapper for: " << virtualdevice << std::endl;
+				RemoveDeviceMapper(virtualdevice);
+			}
 
-        foreach (const string &virtualdevice, virtualdevicestoremove) {
-                std::cerr << "Dismounting Virtual Device: " << virtualdevice << std::endl;
-                DismountFilesystem(virtualdevice, false);
-                std::cerr << "Removing DevMapper for: " << virtualdevice << std::endl;
-                RemoveDeviceMapper(virtualdevice);
-            }
-
-        foreach (const string &auxmnt, auxmntstoremove) {
-                std::cerr << "Dismounting AuxMountPoint: " << auxmnt << std::endl;
-                DismountFilesystem(auxmnt, false);
-            }
-    }
+		foreach (const string &auxmnt, auxmntstoremove) {
+				std::cerr << "Dismounting AuxMountPoint: " << auxmnt << std::endl;
+				DismountFilesystem(auxmnt, false);
+			}
+	}
 
 	shared_ptr <VolumeInfo> CoreUnix::MountVolume (MountOptions &options)
 	{
