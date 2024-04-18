@@ -200,6 +200,7 @@ namespace VeraCrypt
 
 		list <string> dmsetupArgs;
 		dmsetupArgs.push_back ("remove");
+		dmsetupArgs.push_back ("--retry");
 		dmsetupArgs.push_back (StringConverter::Split (devMapName, "/").back());
 
 		for (int t = 0; true; t++)
