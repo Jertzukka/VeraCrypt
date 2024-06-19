@@ -1,0 +1,43 @@
+name: Build and test MacOS
+
+on:
+  push:
+    branches: [ "ci" ]
+  pull_request:
+    branches: [ "ci" ]
+
+env:
+  WXWIDGETS_VERSION: 3.2.5
+
+jobs:
+  build:
+
+    runs-on: macos-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Download and extract wxWidgets
+      run: |
+        gh release download --repo wxWidgets/wxWidgets v$WXWIDGETS_VERSION -p "wxWidgets-$WXWIDGETS_VERSION.tar.bz2" && \
+        mkdir "wxWidgets-$WXWIDGETS_VERSION" && \
+        tar -xf "wxWidgets-$WXWIDGETS_VERSION.tar.bz2" -C "wxWidgets-$WXWIDGETS_VERSION" --strip-components 1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Install pcsc-lite
+      run: BREW_NO_AUTO_UPDATE=1 brew install
+    - name: Install yasm
+      run: BREW_NO_AUTO_UPDATE=1 brew yasm
+    - name: Set target and SDK
+      run: export VC_OSX_TARGET=12 && export VC_OSX_SDK=`xcrun --show-sdk-version`
+    - name: Build wxWidgets
+      run: make WXSTATIC=1 WITHGTK3=1 WX_ROOT=${{ github.workspace }}/wxWidgets-$WXWIDGETS_VERSION -C src wxbuild
+    - name: Build VeraCrypt
+      run: make WXSTATIC=1 WITHGTK3=1 WX_ROOT=${{ github.workspace }}/wxWidgets-$WXWIDGETS_VERSION -C src
+    - name: Test binary
+      run: |
+        sudo ./src/Main/veracrypt --text --non-interactive Tests/test.sha256.hc --hash sha256 --slot 1 --password test --mount-options=ro && \
+        sudo ./src/Main/veracrypt --text --non-interactive Tests/test.sha512.hc --hash sha512 --slot 2 --password test --mount-options=ro && \
+        sudo ./src/Main/veracrypt --text --non-interactive Tests/test.streebog.hc --hash streebog --slot 3 --password test --mount-options=ro && \
+        sudo ./src/Main/veracrypt --text --non-interactive Tests/test.whirlpool.hc --hash whirlpool --slot 4 --password test --mount-options=ro && \
+        sudo ./src/Main/veracrypt --text --list && \
+        sudo ./src/Main/veracrypt -d
