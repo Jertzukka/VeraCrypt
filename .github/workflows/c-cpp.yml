@@ -38,4 +38,5 @@ jobs:
         sudo ./src/Main/veracrypt --text --non-interactive Tests/test.sha512.hc --hash sha512 --slot 2 --password test --mount-options=ro && \
         sudo ./src/Main/veracrypt --text --non-interactive Tests/test.streebog.hc --hash streebog --slot 3 --password test --mount-options=ro && \
         sudo ./src/Main/veracrypt --text --non-interactive Tests/test.whirlpool.hc --hash whirlpool --slot 4 --password test --mount-options=ro && \
+        sudo ./src/Main/veracrypt --text --list && \
         sudo ./src/Main/veracrypt -d
