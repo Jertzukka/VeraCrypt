@@ -27,9 +27,9 @@ jobs:
     - name: Install libfuse-dev
       run: sudo apt-get install -y libfuse-dev
     - name: Build wxWidgets
-      run: make WXSTATIC=1 WX_ROOT=${{ github.workspace }}/wxWidgets wxbuild
+      run: make WXSTATIC=1 WX_ROOT=${{ github.workspace }}/wxWidgets -C src wxbuild
     - name: Build VeraCrypt
-      run: make WXSTATIC=1 WX_ROOT=${{ github.workspace }}/wxWidgets
+      run: make WXSTATIC=1 WX_ROOT=${{ github.workspace }}/wxWidgets -C src
     - name: test
       run: echo "Testing"
       
