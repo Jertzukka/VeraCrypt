@@ -1,0 +1,37 @@
+name: C/C++ CI
+
+on:
+  push:
+    branches: [ "ci" ]
+  pull_request:
+    branches: [ "ci" ]
+
+env:
+  WXWIDGETS_VERSION: 3.2.5
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Download and extract wxWidgets 3.2.5
+      run: gh release download --repo wxWidgets/wxWidgets v3.2.5 -p 'wxWidgets-3.2.5.tar.bz2' && mkdir 'wxWidgets' && tar -xf 'wxWidgets-3.2.5.tar.bz2' -C 'wxWidgets' --strip-components 1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Install libpcsclite-dev
+      run: sudo apt-get install -y libpcsclite-dev
+    - name: Install yasm
+      run: sudo apt-get install -y yasm
+    - name: Install libfuse-dev
+      run: sudo apt-get install -y libfuse-dev
+    - name: Install libgtk-3-dev
+      run: sudo apt-get install -y libgtk-3-dev
+    - name: Build wxWidgets
+      run: make WXSTATIC=1 WITHGTK3=1 WX_ROOT=${{ github.workspace }}/wxWidgets -C src wxbuild
+    - name: Build VeraCrypt
+      run: make WXSTATIC=1 WITHGTK3=1 WX_ROOT=${{ github.workspace }}/wxWidgets -C src
+    - name: test
+      run: echo "Testing"
+      
