@@ -1,4 +1,4 @@
-name: C/C++ CI
+name: Build and test Linux
 
 on:
   push:
@@ -17,7 +17,10 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Download and extract wxWidgets
-      run: gh release download --repo wxWidgets/wxWidgets v$WXWIDGETS_VERSION -p "wxWidgets-$WXWIDGETS_VERSION.tar.bz2" && mkdir "wxWidgets-$WXWIDGETS_VERSION" && tar -xf "wxWidgets-$WXWIDGETS_VERSION.tar.bz2" -C "wxWidgets-$WXWIDGETS_VERSION" --strip-components 1
+      run: |
+        gh release download --repo wxWidgets/wxWidgets v$WXWIDGETS_VERSION -p "wxWidgets-$WXWIDGETS_VERSION.tar.bz2" && \
+        mkdir "wxWidgets-$WXWIDGETS_VERSION" && \
+        tar -xf "wxWidgets-$WXWIDGETS_VERSION.tar.bz2" -C "wxWidgets-$WXWIDGETS_VERSION" --strip-components 1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - name: Install libpcsclite-dev
