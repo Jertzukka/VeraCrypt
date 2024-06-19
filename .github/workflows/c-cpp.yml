@@ -14,7 +14,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Install libpcsclite
-      run: sudo apt-get install -y libpcsclite
+      run: sudo apt-get install -y libpcsclite-dev
     - name: make
       run: make -C src
     - name: test
