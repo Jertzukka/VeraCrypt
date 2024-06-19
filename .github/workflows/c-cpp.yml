@@ -26,6 +26,8 @@ jobs:
       run: sudo apt-get install -y libpcsclite-dev
     - name: Install libfuse-dev
       run: sudo apt-get install -y libfuse-dev
+    - name: Install libgtk-3-dev
+      run: sudo apt-get install -y libgtk-3-dev
     - name: Build wxWidgets
       run: make WXSTATIC=1 WX_ROOT=${{ github.workspace }}/wxWidgets -C src wxbuild
     - name: Build VeraCrypt
