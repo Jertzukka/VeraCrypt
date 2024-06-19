@@ -6,6 +6,9 @@ on:
   pull_request:
     branches: [ "ci" ]
 
+env:
+  WXWIDGETS_VERSION: 3.2.5
+
 jobs:
   build:
 
@@ -13,12 +16,12 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-    - name: Download wxWidgets 3.2.5
-      run: gh release download --repo wxWidgets/wxWidgets v3.2.5 -A 'tar.gz' -D 'wxWidgets'
+    - name: Download and extract wxWidgets 3.2.5
+      run: gh release download --repo wxWidgets/wxWidgets v3.2.5 -A 'tar.gz' && mkdir 'wxWidgets' && 'tar -xf 'wxWidgets-3.2.5.tar.gz' -C 'wxWidgets'
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - name: list
-      run: ls -la
+      run: ls -la ./wxWidgets
     - name: Install libpcsclite-dev
       run: sudo apt-get install -y libpcsclite-dev
     - name: Install libfuse-dev
