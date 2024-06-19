@@ -16,8 +16,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-    - name: Download and extract wxWidgets 3.2.5
-      run: gh release download --repo wxWidgets/wxWidgets v3.2.5 -p 'wxWidgets-3.2.5.tar.bz2' && mkdir '../wxWidgets-3.2.5' && tar -xf 'wxWidgets-3.2.5.tar.bz2' -C '../wxWidgets-3.2.5' --strip-components 1
+    - name: Download and extract wxWidgets $WXWIDGETS_VERSION
+      run: gh release download --repo wxWidgets/wxWidgets v$WXWIDGETS_VERSION -p 'wxWidgets-$WXWIDGETS_VERSION.tar.bz2' && mkdir 'wxWidgets-$WXWIDGETS_VERSION' && tar -xf 'wxWidgets-$WXWIDGETS_VERSION.tar.bz2' -C 'wxWidgets-$WXWIDGETS_VERSION' --strip-components 1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - name: Install libpcsclite-dev
@@ -29,13 +29,9 @@ jobs:
     - name: Install libgtk-3-dev
       run: sudo apt-get install -y libgtk-3-dev
     - name: Build wxWidgets
-      run: make WXSTATIC=1 WITHGTK3=1 WX_ROOT=${{ github.workspace }}/../wxWidgets-3.2.5 -C src wxbuild
-    #- name: Build VeraCrypt
-    #  run: make WXSTATIC=1 WITHGTK3=1 WX_ROOT=${{ github.workspace }}/../wxWidgets-3.2.5 -C src
+      run: make WXSTATIC=1 WITHGTK3=1 WX_ROOT=${{ github.workspace }}/wxWidgets-$WXWIDGETS_VERSION -C src wxbuild
     - name: Build VeraCrypt
-      run: src/Build/build_cmake_deb.sh "GUI" "WXSTATIC" ""
-    - name: ls
-      run: ls -la VeraCrypt_Packaging
+      run: make WXSTATIC=1 WITHGTK3=1 WX_ROOT=${{ github.workspace }}/wxWidgets-$WXWIDGETS_VERSION -C src
     - name: Test binary
       run: |
         sudo ./src/Main/veracrypt --text --non-interactive Tests/test.sha256.hc --hash sha256 --slot 1 --password test --mount-options=ro && \
