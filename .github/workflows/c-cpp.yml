@@ -17,7 +17,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Download and extract wxWidgets 3.2.5
-      run: gh release download --repo wxWidgets/wxWidgets v3.2.5 -A 'tar.gz' && mkdir 'wxWidgets' && tar -xf 'wxWidgets-3.2.5.tar.gz' -C 'wxWidgets' --strip-components 1
+      run: gh release download --repo wxWidgets/wxWidgets v3.2.5 -p 'wxWidgets-3.2.5.tar.bz2' && mkdir 'wxWidgets' && tar -xf 'wxWidgets-3.2.5.tar.bz2' -C 'wxWidgets' --strip-components 1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - name: list
