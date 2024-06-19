@@ -14,7 +14,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: make
-      run: make
+      run: make -C src
     - name: test
       run: echo "Testing"
       
