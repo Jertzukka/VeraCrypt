@@ -17,7 +17,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Download and extract wxWidgets 3.2.5
-      run: gh release download --repo wxWidgets/wxWidgets v3.2.5 -A 'tar.gz' && mkdir 'wxWidgets' && tar -xf 'wxWidgets-3.2.5.tar.gz' -C 'wxWidgets'
+      run: gh release download --repo wxWidgets/wxWidgets v3.2.5 -A 'tar.gz' && mkdir 'wxWidgets' && tar -xf 'wxWidgets-3.2.5.tar.gz' -C 'wxWidgets' --strip-components 1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - name: list
@@ -26,8 +26,10 @@ jobs:
       run: sudo apt-get install -y libpcsclite-dev
     - name: Install libfuse-dev
       run: sudo apt-get install -y libfuse-dev
-    - name: make
-      run: make -C src
+    - name: Build wxWidgets
+      run: make WXSTATIC=1 WX_ROOT=${{ github.workspace }}/wxWidgets wxbuild
+    - name: Build VeraCrypt
+      run: make WXSTATIC=1 WX_ROOT=${{ github.workspace }}/wxWidgets
     - name: test
       run: echo "Testing"
       
