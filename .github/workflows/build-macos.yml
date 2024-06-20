@@ -30,9 +30,9 @@ jobs:
     - name: Set target and SDK
       run: export VC_OSX_TARGET=12 && export VC_OSX_SDK=`xcrun --show-sdk-version`
     - name: Build wxWidgets
-      run: make WXSTATIC=1 WITHGTK3=1 WX_ROOT=${{ github.workspace }}/wxWidgets-$WXWIDGETS_VERSION -C src wxbuild
+      run: make WXSTATIC=FULL WITHGTK3=1 WX_ROOT=${{ github.workspace }}/wxWidgets-$WXWIDGETS_VERSION -C src wxbuild
     - name: Build VeraCrypt
-      run: make WXSTATIC=1 WITHGTK3=1 WX_ROOT=${{ github.workspace }}/wxWidgets-$WXWIDGETS_VERSION -C src
+      run: make WXSTATIC=FULL WITHGTK3=1 WX_ROOT=${{ github.workspace }}/wxWidgets-$WXWIDGETS_VERSION -C src
     - name: Test binary
       run: |
         sudo ./src/Main/veracrypt --text --non-interactive Tests/test.sha256.hc --hash sha256 --slot 1 --password test --mount-options=ro && \
