@@ -24,9 +24,11 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - name: Install pcsc-lite
-      run: BREW_NO_AUTO_UPDATE=1 brew install pcsc-lite
+      run: HOMEBREW_NO_AUTO_UPDATE=1 brew install pcsc-lite
     - name: Install yasm
-      run: BREW_NO_AUTO_UPDATE=1 brew install yasm
+      run: HOMEBREW_NO_AUTO_UPDATE=1 brew install yasm
+    - name: Install macfuse
+      run: HOMEBREW_NO_AUTO_UPDATE=1 brew install --cask macfuse
     - name: Set target and SDK
       run: export VC_OSX_TARGET=12 && export VC_OSX_SDK=`xcrun --show-sdk-version`
     - name: Build wxWidgets
