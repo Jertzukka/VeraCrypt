@@ -512,34 +512,19 @@ CFLAGS := $(C_CXX_FLAGS) $(CFLAGS) $(TC_EXTRA_CFLAGS)
 CXXFLAGS := $(C_CXX_FLAGS) $(CXXFLAGS) $(TC_EXTRA_CXXFLAGS)
 LFLAGS := $(LFLAGS) $(TC_EXTRA_LFLAGS)
 
-WX_CONFIGURE_FLAGS += --enable-unicode -disable-shared --disable-dependency-tracking --enable-exceptions --enable-std_string --enable-dataobj --enable-mimetype
+WX_CONFIGURE_FLAGS += --disable-shared
 
 ifdef VC_WX_MINIMAL
-WX_CONFIGURE_FLAGS += --disable-protocol --disable-protocols --disable-url --disable-ipc --disable-sockets --without-libcurl --disable-fs_inet --disable-ole --disable-docview --disable-clipboard \
-	--disable-help --disable-html --disable-mshtmlhelp --disable-htmlhelp --disable-mdi --disable-metafile --disable-addremovectrl --disable-webview \
-	--disable-xrc --disable-aui --disable-postscript --disable-printarch \
-	--disable-arcstream --disable-fs_archive --disable-fs_zip --disable-tarstream --disable-zipstream \
-	--disable-animatectrl --disable-bmpcombobox --disable-calendar --disable-caret --disable-checklst --disable-collpane --disable-colourpicker --disable-comboctrl \
-	--disable-datepick --disable-display --disable-dirpicker --disable-filepicker --disable-fontpicker --disable-grid --disable-dataviewctrl \
-	--disable-listbook --disable-odcombobox --disable-sash --disable-searchctrl --disable-slider --disable-splitter --disable-togglebtn \
-	--disable-toolbar --disable-tbarnative --disable-treebook --disable-toolbook --disable-tipwindow --disable-popupwin \
-	--disable-commondlg --disable-aboutdlg --disable-coldlg --disable-finddlg --disable-fontdlg --disable-numberdlg --disable-splash \
-	--disable-tipdlg --disable-progressdlg --disable-wizarddlg --disable-miniframe --disable-splines --disable-palette \
-	--disable-richtext --disable-dialupman --disable-debugreport --disable-filesystem --disable-rearrangectrl --disable-treelist --disable-richmsgdlg \
-	--disable-richtooltip --disable-propgrid --disable-stc --without-libnotify \
-	--without-gtkprint --without-gnomevfs --disable-fsvolume --disable-fswatcher \
-	--disable-sound --disable-mediactrl --disable-joystick --disable-apple_ieee \
-	--disable-gif --disable-pcx --disable-tga --disable-iff --disable-gif --disable-pnm --disable-svg \
-	--without-expat --without-libtiff --without-libjpeg --without-libpng -without-regex --without-zlib
-	
-ifneq (,$(filter Linux FreeBSD,$(PLATFORM)))
-WX_CONFIGURE_FLAGS += --disable-tooltips
-ifneq "$(origin WITHGTK3)" "command line"
-	WX_CONFIGURE_FLAGS += --disable-graphics_ctx
-endif
-else
-	WX_CONFIGURE_FLAGS += --disable-graphics_ctx
-endif
+WX_CONFIGURE_FLAGS += --disable-all-features --enable-baseevtloop --enable-epollloop --enable-selectloop \
+	--enable-streams --enable-image --enable-statbmp --enable-msgdlg --enable-button --enable-stattext \
+	--enable-listctrl --enable-listbox --enable-hyperlink --enable-snglinst --enable-menus --enable-menubar \
+	--enable-textdlg --enable-textctrl --enable-timer --enable-datetime --enable-longlong --enable-threads \
+	--enable-checkbox --enable-choice --enable-statbox --enable-spinctrl --enable-gauge --enable-spinbtn \
+	--enable-validators --enable-statline --enable-combobox --enable-comboctrl --enable-imaglist \
+	--enable-notebook --enable-cmdline --enable-intl --enable-filedlg --enable-filectrl --enable-treectrl \
+	--enable-radiobtn --enable-log --enable-choicedlg --enable-taskbaricon --enable-dirdlg --enable-dnd \
+	--enable-dynlib --enable-mimetype --enable-dataobj --enable-xpm --enable-ffile --enable-file --enable-textfile \
+	--enable-textbuf --enable-graphics_ctx --enable-geometry
 endif
 
 
