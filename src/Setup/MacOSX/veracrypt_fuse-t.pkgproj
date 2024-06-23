@@ -520,7 +520,7 @@
 				<key>POSTINSTALL_PATH</key>
 				<dict>
 					<key>PATH</key>
-					<string>postinstall.sh</string>
+					<string>postinstall_fuse-t.sh</string>
 					<key>PATH_TYPE</key>
 					<integer>1</integer>
 				</dict>
@@ -750,56 +750,12 @@
 					<integer>3</integer>
 					<key>DICTIONARY</key>
 					<dict>
-						<key>IC_REQUIREMENT_CPU_ARCHITECTURE_FAMILY</key>
-						<integer>2</integer>
-						<key>IC_REQUIREMENT_CPU_INTEL_ARCHITECTURE_TYPE</key>
-						<integer>0</integer>
-						<key>IC_REQUIREMENT_CPU_MINIMUM_CPU_CORES_COUNT</key>
-						<integer>1</integer>
-						<key>IC_REQUIREMENT_CPU_MINIMUM_FREQUENCY</key>
-						<integer>866666</integer>
-						<key>IC_REQUIREMENT_CPU_POWERPC_ARCHITECTURE_TYPE</key>
-						<integer>0</integer>
-					</dict>
-					<key>IC_REQUIREMENT_CHECK_TYPE</key>
-					<integer>0</integer>
-					<key>IDENTIFIER</key>
-					<string>fr.whitebox.Packages.requirement.cpu</string>
-					<key>MESSAGE</key>
-					<array>
-						<dict>
-							<key>LANGUAGE</key>
-							<string>English</string>
-							<key>SECONDARY_VALUE</key>
-							<string></string>
-							<key>VALUE</key>
-							<string>VeraCrypt runs only on Intel platforms.</string>
-						</dict>
-						<dict>
-							<key>LANGUAGE</key>
-							<string>French</string>
-							<key>SECONDARY_VALUE</key>
-							<string></string>
-							<key>VALUE</key>
-							<string>VeraCrypt supporte seulement les platformes Intel.</string>
-						</dict>
-					</array>
-					<key>NAME</key>
-					<string>Processor</string>
-					<key>STATE</key>
-					<true/>
-				</dict>
-				<dict>
-					<key>BEHAVIOR</key>
-					<integer>3</integer>
-					<key>DICTIONARY</key>
-					<dict>
 						<key>IC_REQUIREMENT_OS_DISK_TYPE</key>
 						<integer>1</integer>
 						<key>IC_REQUIREMENT_OS_DISTRIBUTION_TYPE</key>
 						<integer>0</integer>
 						<key>IC_REQUIREMENT_OS_MINIMUM_VERSION</key>
-						<integer>100701</integer>
+						<integer>119900</integer>
 					</dict>
 					<key>IC_REQUIREMENT_CHECK_TYPE</key>
 					<integer>0</integer>
@@ -811,13 +767,13 @@
 							<key>LANGUAGE</key>
 							<string>English</string>
 							<key>VALUE</key>
-							<string>VeraCrypt requires MacOSX 10.7.1 and above.</string>
+							<string>VeraCrypt requires MacOSX 12 and above.</string>
 						</dict>
 						<dict>
 							<key>LANGUAGE</key>
 							<string>French</string>
 							<key>VALUE</key>
-							<string>VeraCrypt nécessite MacOSX 10.7.1 et supérieur.</string>
+							<string>VeraCrypt nécessite MacOSX 12 et supérieur.</string>
 						</dict>
 					</array>
 					<key>NAME</key>
@@ -836,8 +792,7 @@
 						<integer>1</integer>
 						<key>IC_REQUIREMENT_FILES_LIST</key>
 						<array>
-							<string>/usr/local/lib/libfuse.dylib</string>
-							<string>/usr/local/lib/libosxfuse.2.dylib</string>
+							<string>/usr/local/lib/libfuse-t.dylib</string>
 						</array>
 						<key>IC_REQUIREMENT_FILES_SELECTOR</key>
 						<integer>0</integer>
@@ -854,9 +809,9 @@
 							<key>SECONDARY_VALUE</key>
 							<string></string>
 							<key>VALUE</key>
-							<string>OSXFuse seems to be missing on your machine. VeraCrypt requires OSXFuse 3.10 or above.
-Please download the latest OSXFuse version from  :
-https://osxfuse.github.io/</string>
+							<string>FUSE-T seems to be missing on your machine. VeraCrypt requires OSXFuse 1.0 or above.
+Please download the latest FUSE-T version from  :
+https://github.com/macos-fuse-t/fuse-t/releases</string>
 						</dict>
 						<dict>
 							<key>LANGUAGE</key>
@@ -864,15 +819,15 @@ https://osxfuse.github.io/</string>
 							<key>SECONDARY_VALUE</key>
 							<string></string>
 							<key>VALUE</key>
-							<string>OSXFuse semble ne pas être installé sur votre machine. VeraCrypt nécessite OSXFuse 3.10 ou supérieur.
+							<string>FUSE-T semble ne pas être installé sur votre machine. VeraCrypt nécessite FUSE-T 1.0 ou supérieur.
 Merci de télécharger la dernière version de OSXFuse à partir de :
-https://osxfuse.github.io/
+https://github.com/macos-fuse-t/fuse-t/releases
 
 </string>
 						</dict>
 					</array>
 					<key>NAME</key>
-					<string>OSXFuse</string>
+					<string>FUSE-T</string>
 					<key>STATE</key>
 					<true/>
 				</dict>
@@ -884,6 +839,13 @@ https://osxfuse.github.io/
 		</dict>
 		<key>PROJECT_SETTINGS</key>
 		<dict>
+			<key>ADVANCED_OPTIONS</key>
+			<dict>
+				<key>installer-script.options:hostArchitectures</key>
+				<array>
+					<string>x86_64,arm64</string>
+				</array>
+			</dict>
 			<key>BUILD_FORMAT</key>
 			<integer>0</integer>
 			<key>BUILD_PATH</key>
@@ -1062,7 +1024,7 @@ https://osxfuse.github.io/
 				</dict>
 			</array>
 			<key>NAME</key>
-			<string>VeraCrypt Legacy 10</string>
+			<string>VeraCrypt 1.26.12</string>
 			<key>PAYLOAD_ONLY</key>
 			<false/>
 			<key>TREAT_MISSING_PRESENTATION_DOCUMENTS_AS_WARNING</key>
