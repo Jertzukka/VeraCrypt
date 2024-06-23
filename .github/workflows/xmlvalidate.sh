@@ -1,4 +1,5 @@
 #!/bin/bash
+fail=false
 
 # Get all string keys
 KEYS=$(grep -oP '<entry[\ ]+lang="[^"]+"[\ ]+key="\K[^"]+' "$1"/src/Common/Language.xml)
@@ -13,6 +14,7 @@ for file in {"$1"/Translations/Language.*.xml,"$1"/src/Common/Language.xml}; do
 
   if [ "$returnvalue" -ne "0" ]; then
     passes=false
+    fail=true
     echo $output
   fi
 
@@ -21,6 +23,7 @@ for file in {"$1"/Translations/Language.*.xml,"$1"/src/Common/Language.xml}; do
     if ! grep -q "$key" "$file"; then
       echo "Key $key not found in $file"
       passes=false
+      fail=true
     fi
   done
   
@@ -32,3 +35,8 @@ for file in {"$1"/Translations/Language.*.xml,"$1"/src/Common/Language.xml}; do
   
 done
 
+if [ "$fail" = true ]; then
+  exit 1
+else
+  exit 0
+fi
