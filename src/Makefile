@@ -311,7 +311,11 @@ ifeq "$(shell uname -s)" "Darwin"
 	#check to see if XCode 3 path exists.Otherwise, use XCode 4 path
 	VC_OSX_SDK_PATH := /Developer/SDKs/MacOSX$(VC_OSX_SDK).sdk
 	ifeq ($(wildcard $(VC_OSX_SDK_PATH)/SDKSettings.plist),)
-		VC_OSX_SDK_PATH := /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX$(VC_OSX_SDK).sdk
+		ifeq "$(shell Xcode-select -p)" "/Library/Developer/CommandLineTools"
+			VC_OSX_SDK_PATH := /Library/Developer/CommandLineTools/SDKs/MacOSX$(VC_OSX_SDK).sdk
+		else
+			VC_OSX_SDK_PATH := /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX$(VC_OSX_SDK).sdk
+		endif
 	endif
 	
 	#----- Legacy build if OSX <= 10.8: we build both 32-bit and 64-bit ----
@@ -336,8 +340,8 @@ ifeq "$(shell uname -s)" "Darwin"
 		ifeq "$(shell expr $(XCODE_VERSION) \>= 15)" "1"
 			LFLAGS += -Wl,-ld_classic
 		endif
-	else
-		$(error Xcode not found, please check your installation)
+	else ifneq "$(shell Xcode-select -p)" "/Library/Developer/CommandLineTools"
+$(error Xcode not found, please check your installation)
 	endif
 
 	WX_CONFIGURE_FLAGS += --with-macosx-version-min=$(VC_OSX_TARGET) --with-macosx-sdk=$(VC_OSX_SDK_PATH)
