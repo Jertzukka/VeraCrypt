@@ -35,16 +35,15 @@ jobs:
       uses: actions/cache@v4
 
       with:
-        path: |
-          src/wxrelease
-          src/Main/SystemPrecompiled.d
-        key: ${{ runner.os }}-v${{ env.WXWIDGETS_VERSION }}-${{ hashFiles('src/Makefile') }}
+        path: src/wxrelease
+        key: ${{ runner.os }}-v${{ env.WXWIDGETS_VERSION }}-${{ hashFiles('src/Makefile') }}-${{ hashFiles('.github/workflows/build-macos.yml') }}
 
     - if: ${{ steps.cache-wxwidgets.outputs.cache-hit != 'true' }}
-      name: Download and extract wxWidgets
+      name: Download and build wxWidgets
       run: |
-        gh release download --repo wxWidgets/wxWidgets v$WXWIDGETS_VERSION -p "wxWidgets-$WXWIDGETS_VERSION.tar.bz2" && \
-        mkdir "wxWidgets-$WXWIDGETS_VERSION" && \
+        ls -la
+        gh release download --repo wxWidgets/wxWidgets v$WXWIDGETS_VERSION -p "wxWidgets-$WXWIDGETS_VERSION.tar.bz2"
+        mkdir "wxWidgets-$WXWIDGETS_VERSION"
         tar -xf "wxWidgets-$WXWIDGETS_VERSION.tar.bz2" -C "wxWidgets-$WXWIDGETS_VERSION" --strip-components 1
         make WXSTATIC=FULL WITHGTK3=1 WX_ROOT=${{ github.workspace }}/wxWidgets-$WXWIDGETS_VERSION -C src wxbuild
 
