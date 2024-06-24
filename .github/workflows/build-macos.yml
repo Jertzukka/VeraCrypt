@@ -90,9 +90,9 @@ jobs:
     - name: Install yasm
       run: HOMEBREW_NO_AUTO_UPDATE=1 brew install yasm
     - name: Install fuse-t
-      run: HOMEBREW_NO_AUTO_UPDATE=1 sudo brew install macos-fuse-t/homebrew-cask/fuse-t
+      run: HOMEBREW_NO_AUTO_UPDATE=1 brew install macos-fuse-t/homebrew-cask/fuse-t
     - name: Test
-      run: pkg-config fuse-t --libs
+      run: pkg-config fuse-t --libs && pkg-config fuse-t --cflags && cat /usr/local/lib/pkgconfig/fuse-t.pc && ls -la cat /usr/local/lib/pkgconfig
     - name: Build VeraCrypt
       run: make WITHFUSET=1 WXSTATIC=FULL WITHGTK3=1 WX_ROOT=${{ github.workspace }}/wxWidgets-$WXWIDGETS_VERSION -C src
     - name: Test binary and mounting volumes
