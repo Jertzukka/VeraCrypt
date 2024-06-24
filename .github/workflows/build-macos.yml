@@ -84,7 +84,7 @@ jobs:
     - if: ${{ steps.cache-wxwidgets.outputs.cache-hit != 'true' }}
       name: Build wxWidgets
       run: |
-        make WITHFUSET=1 WXSTATIC=FULL WITHGTK3=1 WX_ROOT=${{ github.workspace }}/wxWidgets-$WXWIDGETS_VERSION -C src wxbuild
+        export VC_OSX_FUSET=1 && make WITHFUSET=1 WXSTATIC=FULL WITHGTK3=1 WX_ROOT=${{ github.workspace }}/wxWidgets-$WXWIDGETS_VERSION -C src wxbuild
     - name: Install pcsc-lite
       run: HOMEBREW_NO_AUTO_UPDATE=1 brew install pcsc-lite
     - name: Install yasm
@@ -96,7 +96,7 @@ jobs:
     - name: Test
       run: pkg-config fuse-t --libs
     - name: Build VeraCrypt
-      run: make WITHFUSET=1 WXSTATIC=FULL WITHGTK3=1 WX_ROOT=${{ github.workspace }}/wxWidgets-$WXWIDGETS_VERSION -C src
+      run: export VC_OSX_FUSET=1 && make WITHFUSET=1 WXSTATIC=FULL WITHGTK3=1 WX_ROOT=${{ github.workspace }}/wxWidgets-$WXWIDGETS_VERSION -C src
     - name: Test binary and mounting volumes
       run: |
         ./src/Main/veracrypt --text --test && ./src/Main/veracrypt --text --version
