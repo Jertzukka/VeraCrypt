@@ -94,7 +94,7 @@ jobs:
     - name: Install pkg-config
       run: HOMEBREW_NO_AUTO_UPDATE=1 brew install pkg-config
     - name: Test
-      run: pkg-config fuse-t --libs && pkg-config fuse --libs
+      run: pkg-config fuse-t --libs
     - name: Build VeraCrypt
       run: make WITHFUSET=1 WXSTATIC=FULL WITHGTK3=1 WX_ROOT=${{ github.workspace }}/wxWidgets-$WXWIDGETS_VERSION -C src
     - name: Test binary and mounting volumes
