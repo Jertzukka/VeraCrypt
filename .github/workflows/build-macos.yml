@@ -32,11 +32,13 @@ jobs:
     - uses: actions/checkout@v4
     - name: Check for wxWidgets build cache
       id: cache-wxwidgets
-      uses: actions/cache@v3
+      uses: actions/cache@v4
 
       with:
-        path: ${{ github.workspace }}/src/wxrelease
-        key: ${{ runner.os }}-${{ env.WXWIDGETS_VERSION }}-${{ hashFiles('src/Makefile') }}
+        path: |
+          src/wxrelease
+          src/Main/SystemPrecompiled.d
+        key: ${{ runner.os }}-v${{ env.WXWIDGETS_VERSION }}-${{ hashFiles('src/Makefile') }}
 
     - if: ${{ steps.cache-wxwidgets.outputs.cache-hit != 'true' }}
       name: Download and extract wxWidgets
