@@ -42,15 +42,12 @@ jobs:
 
       with:
         path: src/wxrelease
-        key: ${{ runner.os }}-v${{ env.WXWIDGETS_VERSION }}-${{ hashFiles('src/Makefile') }}-${{ hashFiles('.github/workflows/build-macos.yml') }}
+        key: ${{ github.job }}-v${{ env.WXWIDGETS_VERSION }}-${{ hashFiles('src/Makefile') }}-${{ hashFiles('.github/workflows/build-macos.yml') }}
 
     - if: ${{ steps.cache-wxwidgets.outputs.cache-hit != 'true' }}
       name: Build wxWidgets
       run: |
         make WXSTATIC=FULL WITHGTK3=1 WX_ROOT=${{ github.workspace }}/wxWidgets-$WXWIDGETS_VERSION -C src wxbuild
-
-    - name: Print src
-      run: ls -la src
     - name: Install pcsc-lite
       run: HOMEBREW_NO_AUTO_UPDATE=1 brew install pcsc-lite
     - name: Install yasm
@@ -62,11 +59,46 @@ jobs:
     - name: Test binary
       run: |
         ./src/Main/veracrypt --text --test && ./src/Main/veracrypt --text --version
-    #- name: Test volumes
-    #  run: |
-    #    sudo ./src/Main/veracrypt --text --non-interactive Tests/test.sha256.hc --hash sha256 --slot 1 --password test --mount-options=ro && \
-    #    sudo ./src/Main/veracrypt --text --non-interactive Tests/test.sha512.hc --hash sha512 --slot 2 --password test --mount-options=ro && \
-    #    sudo ./src/Main/veracrypt --text --non-interactive Tests/test.streebog.hc --hash streebog --slot 3 --password test --mount-options=ro && \
-    #    sudo ./src/Main/veracrypt --text --non-interactive Tests/test.whirlpool.hc --hash whirlpool --slot 4 --password test --mount-options=ro && \
-    #    sudo ./src/Main/veracrypt --text --list && \
-    #    sudo ./src/Main/veracrypt -d
+
+  macos-latest-fuset:
+
+    runs-on: macos-latest
+    timeout-minutes: 45
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Download wxWidgets archive
+      run: |
+        gh release download --repo wxWidgets/wxWidgets v$WXWIDGETS_VERSION -p "wxWidgets-$WXWIDGETS_VERSION.tar.bz2"
+        mkdir "wxWidgets-$WXWIDGETS_VERSION"
+        tar -xf "wxWidgets-$WXWIDGETS_VERSION.tar.bz2" -C "wxWidgets-$WXWIDGETS_VERSION" --strip-components 1
+  
+    - name: Check for wxWidgets build cache
+      id: cache-wxwidgets
+      uses: actions/cache@v4
+  
+      with:
+        path: src/wxrelease
+        key: ${{ github.job }}-v${{ env.WXWIDGETS_VERSION }}-${{ hashFiles('src/Makefile') }}-${{ hashFiles('.github/workflows/build-macos.yml') }}
+  
+    - if: ${{ steps.cache-wxwidgets.outputs.cache-hit != 'true' }}
+      name: Build wxWidgets
+      run: |
+        make WITHFUSET=1 WXSTATIC=FULL WITHGTK3=1 WX_ROOT=${{ github.workspace }}/wxWidgets-$WXWIDGETS_VERSION -C src wxbuild
+    - name: Install pcsc-lite
+      run: HOMEBREW_NO_AUTO_UPDATE=1 brew install pcsc-lite
+    - name: Install yasm
+      run: HOMEBREW_NO_AUTO_UPDATE=1 brew install yasm
+    - name: Install fuse-t
+      run: HOMEBREW_NO_AUTO_UPDATE=1 brew install macos-fuse-t/homebrew-cask/fuse-t
+    - name: Build VeraCrypt
+      run: make WITHFUSET=1 WXSTATIC=FULL WITHGTK3=1 WX_ROOT=${{ github.workspace }}/wxWidgets-$WXWIDGETS_VERSION -C src
+    - name: Test binary and mounting volumes
+      run: |
+        ./src/Main/veracrypt --text --test && ./src/Main/veracrypt --text --version
+        sudo ./src/Main/veracrypt --text --non-interactive Tests/test.sha256.hc --hash sha256 --slot 1 --password test --mount-options=ro
+        sudo ./src/Main/veracrypt --text --non-interactive Tests/test.sha512.hc --hash sha512 --slot 2 --password test --mount-options=ro
+        sudo ./src/Main/veracrypt --text --non-interactive Tests/test.streebog.hc --hash streebog --slot 3 --password test --mount-options=ro
+        sudo ./src/Main/veracrypt --text --non-interactive Tests/test.whirlpool.hc --hash whirlpool --slot 4 --password test --mount-options=ro
+        sudo ./src/Main/veracrypt --text --list
+        sudo ./src/Main/veracrypt -d
