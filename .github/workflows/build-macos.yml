@@ -28,8 +28,8 @@ jobs:
 
       with:
         path: ${{ github.workspace }}/src/wxrelease
-        key: ${{ runner.os }}-${{ env.WXWIDGETS_VERSION }}-${{ hashFiles('${{ github.workspace }}/src/Makefile') }}
-        restore-keys: ${{ runner.os }}-${{ env.WXWIDGETS_VERSION }}-${{ hashFiles('${{ github.workspace }}/src/Makefile') }}
+        key: ${{ runner.os }}-${{ env.WXWIDGETS_VERSION }}-${{ hashFiles('src/Makefile') }}
+        restore-keys: ${{ runner.os }}-${{ env.WXWIDGETS_VERSION }}-${{ hashFiles('src/Makefile') }}
   
     - if: ${{ steps.cache-wxwidgets.outputs.cache-hit != 'true' }}
       name: Download and extract wxWidgets
