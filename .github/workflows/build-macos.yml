@@ -14,28 +14,37 @@ env:
   WXWIDGETS_VERSION: 3.2.5
 
 jobs:
-  build:
+  macos-12-macfuse:
 
     runs-on: macos-12
-    timeout-minutes: 30
+    timeout-minutes: 45
 
     steps:
     - uses: actions/checkout@v4
-    - name: Download and extract wxWidgets
+    - name: Cache wxwidgets build
+      id: cache-wxwidgets
+      uses: actions/cache@v3
+
+      with:
+        path: ${{ github.workspace }}/src/wxrelease
+        key: ${{ runner.os }}-$WXWIDGETS_VERSION-${{ hashFiles('${{ github.workspace }}/src/Makefile') }}
+        restore-keys: ${{ runner.os }}-$WXWIDGETS_VERSION-${{ hashFiles('${{ github.workspace }}/src/Makefile') }}
+  
+    - if: ${{ steps.cache-wxwidgets.outputs.cache-hit != 'true' }}
+      name: Download and extract wxWidgets
       run: |
         gh release download --repo wxWidgets/wxWidgets v$WXWIDGETS_VERSION -p "wxWidgets-$WXWIDGETS_VERSION.tar.bz2" && \
         mkdir "wxWidgets-$WXWIDGETS_VERSION" && \
         tar -xf "wxWidgets-$WXWIDGETS_VERSION.tar.bz2" -C "wxWidgets-$WXWIDGETS_VERSION" --strip-components 1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
     - name: Install pcsc-lite
       run: HOMEBREW_NO_AUTO_UPDATE=1 brew install pcsc-lite
     - name: Install yasm
       run: HOMEBREW_NO_AUTO_UPDATE=1 brew install yasm
     - name: Install macfuse
       run: HOMEBREW_NO_AUTO_UPDATE=1 brew install --cask macfuse
-    - name: Set target and SDK
-      run: export VC_OSX_TARGET=12 && export VC_OSX_SDK=`xcrun --show-sdk-version`
     - name: Build wxWidgets
       run: make WXSTATIC=FULL WITHGTK3=1 WX_ROOT=${{ github.workspace }}/wxWidgets-$WXWIDGETS_VERSION -C src wxbuild
     - name: Build VeraCrypt
