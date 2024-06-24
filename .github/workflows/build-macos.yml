@@ -3,8 +3,16 @@ name: Build and test MacOS
 on:
   push:
     branches: [ "ci" ]
+    paths:
+      - 'src/**'
+      - '!src/Common/Language.xml'
+      - '.github/workflows/build-macos.yml'
   pull_request:
     branches: [ "ci" ]
+    paths:
+      - 'src/**'
+      - '!src/Common/Language.xml'
+      - '.github/workflows/build-macos.yml'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
