@@ -41,7 +41,7 @@ jobs:
     - if: ${{ steps.cache-wxwidgets.outputs.cache-hit != 'true' }}
       name: Download and build wxWidgets
       run: |
-        ls -la
+        ls -la src
         gh release download --repo wxWidgets/wxWidgets v$WXWIDGETS_VERSION -p "wxWidgets-$WXWIDGETS_VERSION.tar.bz2"
         mkdir "wxWidgets-$WXWIDGETS_VERSION"
         tar -xf "wxWidgets-$WXWIDGETS_VERSION.tar.bz2" -C "wxWidgets-$WXWIDGETS_VERSION" --strip-components 1
