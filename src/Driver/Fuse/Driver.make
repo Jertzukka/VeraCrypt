@@ -19,9 +19,9 @@ ifeq "$(VC_FUSE_PACKAGE)" "fuse-t"
 
 
 if [ -d "/usr/local/include/fuse" ]; then \
-CXXFLAGS += $(shell $(PKG_CONFIG) $(VC_FUSE_PACKAGE) --cflags)
-else
-CXXFLAGS += -I/Library/Application\ Support/fuse-t/include/fuse
+CXXFLAGS += $(shell $(PKG_CONFIG) $(VC_FUSE_PACKAGE) --cflags) \
+else \
+CXXFLAGS += -I/Library/Application\ Support/fuse-t/include/fuse \
 fi
 
 include $(BUILD_INC)/Makefile.inc
