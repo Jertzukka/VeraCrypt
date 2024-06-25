@@ -78,7 +78,11 @@ jobs:
         gh release download --repo macos-fuse-t/fuse-t 1.0.38 -p "fuse-t-macos-installer-1.0.38.pkg"
         sudo installer -pkg fuse-t-macos-installer-1.0.38.pkg -target /
     - name: Test
-      run: pkg-config fuse-t --libs && pkg-config fuse-t --cflags && cat /usr/local/lib/pkgconfig/fuse-t.pc && ls -la /opt/homebrew/include
+      run: |
+        pkg-config fuse-t --libs
+        pkg-config fuse-t --cflags
+        cat /usr/local/lib/pkgconfig/fuse-t.pc
+        ls -la /Library/Application\ Support/fuse-t/include/fuse
     - name: Download wxWidgets archive
       run: |
         gh release download --repo wxWidgets/wxWidgets v$WXWIDGETS_VERSION -p "wxWidgets-$WXWIDGETS_VERSION.tar.bz2"
