@@ -76,8 +76,8 @@ jobs:
     - name: Install fuse-t
       run: |
         HOMEBREW_NO_AUTO_UPDATE=1 brew install macos-fuse-t/homebrew-cask/fuse-t
-        mkdir -p /usr/local/include
-        ln -s /Library/Application\ Support/fuse-t/include/fuse /usr/local/include/fuse
+        sudo mkdir -p /usr/local/include
+        sudo ln -s /Library/Application\ Support/fuse-t/include/fuse /usr/local/include/fuse
         ls -la /usr/local/include
     - name: Test
       run: |
