@@ -36,8 +36,6 @@ jobs:
       run: HOMEBREW_NO_AUTO_UPDATE=1 brew install yasm
     - name: Install macfuse
       run: HOMEBREW_NO_AUTO_UPDATE=1 brew install --cask macfuse
-    - name: Test
-      run: pkg-config fuse --libs && pkg-config fuse --cflags && cat /usr/local/lib/pkgconfig/fuse.pc && ls -la /usr/local/include
     - name: Download wxWidgets archive
       run: |
         gh release download --repo wxWidgets/wxWidgets v$WXWIDGETS_VERSION -p "wxWidgets-$WXWIDGETS_VERSION.tar.bz2"
@@ -59,6 +57,7 @@ jobs:
     - name: Build VeraCrypt
       run: make WXSTATIC=FULL WITHGTK3=1 WX_ROOT=${{ github.workspace }}/wxWidgets-$WXWIDGETS_VERSION -C src
     - name: Test binary
+# Do not attempt mounting, macFUSE requires a reboot so it will not work.
       run: |
         ./src/Main/veracrypt --text --test && ./src/Main/veracrypt --text --version
 
@@ -74,17 +73,13 @@ jobs:
     - name: Install yasm
       run: HOMEBREW_NO_AUTO_UPDATE=1 brew install yasm
     - name: Install fuse-t
+# pkg-config includedir reports /usr/local/include/fuse, but fuse-t doesn't create that link on Sonoma (?), workaround
+# by creating symbolic link to /Library/Application\ Support/fuse-t/include/fuse manually.
       run: |
         HOMEBREW_NO_AUTO_UPDATE=1 brew install macos-fuse-t/homebrew-cask/fuse-t
         sudo mkdir -p /usr/local/include
         sudo ln -s /Library/Application\ Support/fuse-t/include/fuse /usr/local/include/fuse
         ls -la /usr/local/include
-    - name: Test
-      run: |
-        pkg-config fuse-t --libs
-        pkg-config fuse-t --cflags
-        cat /usr/local/lib/pkgconfig/fuse-t.pc
-        ls -la /Library/Application\ Support/fuse-t/include/fuse
     - name: Download wxWidgets archive
       run: |
         gh release download --repo wxWidgets/wxWidgets v$WXWIDGETS_VERSION -p "wxWidgets-$WXWIDGETS_VERSION.tar.bz2"
