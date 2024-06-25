@@ -15,10 +15,10 @@ NAME := Driver
 OBJS :=
 OBJS += FuseService.o
 
-if [ -d "/usr/local/include/fuse" ]; then
-  CXXFLAGS += $(shell $(PKG_CONFIG) $(VC_FUSE_PACKAGE) --cflags)
-else if [ "$VC_FUSE_PACKAGE" = "fuse-t" ]
-  CXXFLAGS += -I/Library/Application\ Support/fuse-t/include/fuse
+if [ -d "$(shell $(PKG_CONFIG) $(VC_FUSE_PACKAGE) --cflags)" ]; then \
+  CXXFLAGS += $(shell $(PKG_CONFIG) $(VC_FUSE_PACKAGE) --cflags) \
+else if [ "$VC_FUSE_PACKAGE" = "fuse-t" ] \
+  CXXFLAGS += -I/Library/Application\ Support/fuse-t/include/fuse \
 fi
 
 include $(BUILD_INC)/Makefile.inc
