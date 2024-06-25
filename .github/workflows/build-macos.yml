@@ -54,6 +54,8 @@ jobs:
       run: HOMEBREW_NO_AUTO_UPDATE=1 brew install yasm
     - name: Install macfuse
       run: HOMEBREW_NO_AUTO_UPDATE=1 brew install --cask macfuse
+    - name: Test
+      run: pkg-config fuse --libs && pkg-config fuse --cflags && cat /usr/local/lib/pkgconfig/fuse.pc && ls -la /usr/local
     - name: Build VeraCrypt
       run: make WXSTATIC=FULL WITHGTK3=1 WX_ROOT=${{ github.workspace }}/wxWidgets-$WXWIDGETS_VERSION -C src
     - name: Test binary
@@ -92,7 +94,7 @@ jobs:
     - name: Install fuse-t
       run: HOMEBREW_NO_AUTO_UPDATE=1 brew install macos-fuse-t/homebrew-cask/fuse-t
     - name: Test
-      run: pkg-config fuse-t --libs && pkg-config fuse-t --cflags && cat /usr/local/lib/pkgconfig/fuse-t.pc && ls -la /usr/local/include/ && ls -la /usr/local/include/fuse
+      run: pkg-config fuse-t --libs && pkg-config fuse-t --cflags && cat /usr/local/lib/pkgconfig/fuse-t.pc && ls -la /usr/local
     - name: Build VeraCrypt
       run: make WITHFUSET=1 WXSTATIC=FULL WITHGTK3=1 WX_ROOT=${{ github.workspace }}/wxWidgets-$WXWIDGETS_VERSION -C src
     - name: Test binary and mounting volumes
