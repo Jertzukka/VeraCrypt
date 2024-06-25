@@ -22,7 +22,7 @@ env:
   WXWIDGETS_VERSION: 3.2.5
 
 jobs:
-  build:
+  ubuntu-latest:
 
     runs-on: ubuntu-latest
     timeout-minutes: 30
