@@ -75,8 +75,8 @@ jobs:
       run: HOMEBREW_NO_AUTO_UPDATE=1 brew install yasm
     - name: Install fuse-t
       run: |
-        gh release download --repo macos-fuse-t/fuse-t 1.0.38 -p "fuse-t-macos-installer-1.0.38.pkg"
-        sudo installer -pkg fuse-t-macos-installer-1.0.38.pkg -target /
+        HOMEBREW_NO_AUTO_UPDATE=1 brew install macos-fuse-t/homebrew-cask/fuse-t
+        pkg-config fuse-t --define-variable=includedir=/Library/Application\ Support/fuse-t/include/fuse
     - name: Test
       run: |
         pkg-config fuse-t --libs
