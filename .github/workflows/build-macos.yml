@@ -30,6 +30,14 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+    - name: Install pcsc-lite
+      run: HOMEBREW_NO_AUTO_UPDATE=1 brew install pcsc-lite
+    - name: Install yasm
+      run: HOMEBREW_NO_AUTO_UPDATE=1 brew install yasm
+    - name: Install macfuse
+      run: HOMEBREW_NO_AUTO_UPDATE=1 brew install --cask macfuse
+    - name: Test
+      run: pkg-config fuse --libs && pkg-config fuse --cflags && cat /usr/local/lib/pkgconfig/fuse.pc && ls -la /usr/local/include
     - name: Download wxWidgets archive
       run: |
         gh release download --repo wxWidgets/wxWidgets v$WXWIDGETS_VERSION -p "wxWidgets-$WXWIDGETS_VERSION.tar.bz2"
@@ -42,20 +50,12 @@ jobs:
 
       with:
         path: src/wxrelease
-        key: ${{ github.job }}-v${{ env.WXWIDGETS_VERSION }}-${{ hashFiles('src/Makefile') }}-${{ hashFiles('.github/workflows/build-macos.yml') }}
+        key: ${{ github.job }}-wx${{ env.WXWIDGETS_VERSION }}-${{ hashFiles('src/Makefile') }}-${{ hashFiles('.github/workflows/build-macos.yml') }}
 
     - if: ${{ steps.cache-wxwidgets.outputs.cache-hit != 'true' }}
       name: Build wxWidgets
       run: |
         make WXSTATIC=FULL WITHGTK3=1 WX_ROOT=${{ github.workspace }}/wxWidgets-$WXWIDGETS_VERSION -C src wxbuild
-    - name: Install pcsc-lite
-      run: HOMEBREW_NO_AUTO_UPDATE=1 brew install pcsc-lite
-    - name: Install yasm
-      run: HOMEBREW_NO_AUTO_UPDATE=1 brew install yasm
-    - name: Install macfuse
-      run: HOMEBREW_NO_AUTO_UPDATE=1 brew install --cask macfuse
-    - name: Test
-      run: pkg-config fuse --libs && pkg-config fuse --cflags && cat /usr/local/lib/pkgconfig/fuse.pc && ls -la /usr/local
     - name: Build VeraCrypt
       run: make WXSTATIC=FULL WITHGTK3=1 WX_ROOT=${{ github.workspace }}/wxWidgets-$WXWIDGETS_VERSION -C src
     - name: Test binary
@@ -69,6 +69,16 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+    - name: Install pcsc-lite
+      run: HOMEBREW_NO_AUTO_UPDATE=1 brew install pcsc-lite
+    - name: Install yasm
+      run: HOMEBREW_NO_AUTO_UPDATE=1 brew install yasm
+    - name: Install fuse-t
+      run: |
+        gh release download --repo macos-fuse-t/fuse-t 1.0.38 -p "fuse-t-macos-installer-1.0.38.pkg"
+        sudo installer -pkg fuse-t-macos-installer-1.0.38.pkg -target /
+    - name: Test
+      run: pkg-config fuse-t --libs && pkg-config fuse-t --cflags && cat /usr/local/lib/pkgconfig/fuse-t.pc && ls -la /opt/homebrew/include
     - name: Download wxWidgets archive
       run: |
         gh release download --repo wxWidgets/wxWidgets v$WXWIDGETS_VERSION -p "wxWidgets-$WXWIDGETS_VERSION.tar.bz2"
@@ -81,22 +91,12 @@ jobs:
   
       with:
         path: src/wxrelease
-        key: ${{ github.job }}-v${{ env.WXWIDGETS_VERSION }}-${{ hashFiles('src/Makefile') }}-${{ hashFiles('.github/workflows/build-macos.yml') }}
+        key: ${{ github.job }}-wx${{ env.WXWIDGETS_VERSION }}-${{ hashFiles('src/Makefile') }}-${{ hashFiles('.github/workflows/build-macos.yml') }}
   
     - if: ${{ steps.cache-wxwidgets.outputs.cache-hit != 'true' }}
       name: Build wxWidgets
       run: |
         make WITHFUSET=1 WXSTATIC=FULL WITHGTK3=1 WX_ROOT=${{ github.workspace }}/wxWidgets-$WXWIDGETS_VERSION -C src wxbuild
-    - name: Install pcsc-lite
-      run: HOMEBREW_NO_AUTO_UPDATE=1 brew install pcsc-lite
-    - name: Install yasm
-      run: HOMEBREW_NO_AUTO_UPDATE=1 brew install yasm
-    - name: Install fuse-t
-      run: |
-        gh release download --repo macos-fuse-t/fuse-t 1.0.38 -p "fuse-t-macos-installer-1.0.38.pkg"
-        sudo installer -pkg fuse-t-macos-installer-1.0.38.pkg -target /
-    - name: Test
-      run: pkg-config fuse-t --libs && pkg-config fuse-t --cflags && cat /usr/local/lib/pkgconfig/fuse-t.pc && ls -la /usr/local
     - name: Build VeraCrypt
       run: make WITHFUSET=1 WXSTATIC=FULL WITHGTK3=1 WX_ROOT=${{ github.workspace }}/wxWidgets-$WXWIDGETS_VERSION -C src
     - name: Test binary and mounting volumes
