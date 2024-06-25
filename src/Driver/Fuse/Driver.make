@@ -17,7 +17,7 @@ OBJS += FuseService.o
 
 if [ -d "$(shell $(PKG_CONFIG) $(VC_FUSE_PACKAGE) --cflags)" ]; then \
   CXXFLAGS += $(shell $(PKG_CONFIG) $(VC_FUSE_PACKAGE) --cflags) \
-else if [ "$VC_FUSE_PACKAGE" = "fuse-t" ] \
+else \
   CXXFLAGS += -I/Library/Application\ Support/fuse-t/include/fuse \
 fi
 
