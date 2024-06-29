@@ -73,8 +73,6 @@ jobs:
     - name: Test
       run: |
         /Applications/Xcode.app/Contents/Developer/usr/bin/ld -v
-        sudo xcode-select --switch /Library/Developer/CommandLineTools
-        /Library/Developer/CommandLineTools/usr/bin/ld -v
     - name: Install pcsc-lite
       run: HOMEBREW_NO_AUTO_UPDATE=1 brew install pcsc-lite
     - name: Install yasm
