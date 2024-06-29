@@ -73,7 +73,6 @@ jobs:
     - name: Test
       run: |
         /Applications/Xcode.app/Contents/Developer/usr/bin/ld -v
-        xcode-select --install
         xcode-select --switch /Library/Developer/CommandLineTools
         /Library/Developer/CommandLineTools/usr/bin/ld -v
     - name: Install pcsc-lite
