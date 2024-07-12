@@ -46,7 +46,7 @@ then
 	GUI=1
 	which xmessage >/dev/null 2>/dev/null && XMESSAGE=1
 	which xterm >/dev/null 2>/dev/null && XTERM=1
-	which gnome-terminal >/dev/null 2>/dev/null && GTERM=1
+	which gnome-terminal >/dev/null 2>/dev/null && which dbus-launch >/dev/null 2>/dev/null && GTERM=1
 	which konsole >/dev/null 2>/dev/null && KTERM=1
 fi
 
