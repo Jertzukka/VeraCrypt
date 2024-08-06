@@ -5577,6 +5577,14 @@ void handleError (HWND hwndDlg, int code, const char* srcPos)
 		break;
 #endif
 
+	case ERR_XTS_MASTERKEY_VULNERABLE:
+		MessageBoxW (hwndDlg, AppendSrcPos (GetString ("ERR_XTS_MASTERKEY_VULNERABLE"), srcPos).c_str(), lpszTitle, ICON_HAND);
+		break;
+
+	case ERR_SYSENC_XTS_MASTERKEY_VULNERABLE:
+		MessageBoxW (hwndDlg, AppendSrcPos (GetString ("ERR_SYSENC_XTS_MASTERKEY_VULNERABLE"), srcPos).c_str(), lpszTitle, ICON_HAND);
+		break;
+
 	default:
 		StringCbPrintfW (szTmp, sizeof(szTmp), GetString ("ERR_UNKNOWN"), code);
 		MessageBoxW (hwndDlg, AppendSrcPos (szTmp, srcPos).c_str(), lpszTitle, ICON_HAND);
@@ -8952,6 +8960,12 @@ retry:
 	}
 	
 	LastMountedVolumeDirty = mount.FilesystemDirty;
+
+	if (mount.VolumeMasterKeyVulnerable
+		&& !Silent)
+	{
+		Warning ("ERR_XTS_MASTERKEY_VULNERABLE", hwndDlg);
+	}
 
 	if (mount.FilesystemDirty)
 	{
@@ -13907,20 +13921,33 @@ static unsigned int __stdcall SecureDesktopThread( LPVOID lpThreadParameter )
 	StringCbCopy(SecureDesktopName, sizeof (SecureDesktopName), pParam->szDesktopName);
 	pParam->hDesk = hSecureDesk;
 
-	// wait for SwitchDesktop to succeed before using it for current thread
-	while (true)
-	{
-		if (SwitchDesktop (hSecureDesk))
-		{
-			break;
-		}
-		Sleep (SECUREDESKTOP_MONOTIR_PERIOD);
-	}
-
 	bNewDesktopSet = SetThreadDesktop (hSecureDesk);
 
 	if (bNewDesktopSet)
 	{
+		// call ImmDisableIME　from imm32.dll to disable IME since it can create issue with secure desktop
+		// cf: https://keepass.info/help/kb/sec_desk.html#ime
+		HMODULE hImmDll = LoadLibraryEx (L"imm32.dll", NULL, LOAD_LIBRARY_SEARCH_SYSTEM32);
+		if (hImmDll)
+		{
+			typedef BOOL (WINAPI *ImmDisableIME_t)(DWORD);
+			ImmDisableIME_t ImmDisableIME = (ImmDisableIME_t) GetProcAddress (hImmDll, "ImmDisableIME");
+			if (ImmDisableIME)
+			{
+				ImmDisableIME (0);
+			}
+		}
+
+		// wait for SwitchDesktop to succeed before using it for current thread
+		while (true)
+		{
+			if (SwitchDesktop (hSecureDesk))
+			{
+				break;
+			}
+			Sleep (SECUREDESKTOP_MONOTIR_PERIOD);
+		}
+
 		// create the thread that will ensure that VeraCrypt secure desktop has always user input
 		// this is done only if the stop event is created successfully
 		HANDLE hStopEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
@@ -13950,6 +13977,12 @@ static unsigned int __stdcall SecureDesktopThread( LPVOID lpThreadParameter )
 		}
 
 		pParam->bDlgDisplayed = TRUE;
+
+		// free imm32.dll handle
+		if (hImmDll)
+		{
+			FreeLibrary (hImmDll);
+		}
 	}
 	else
 	{
@@ -14070,19 +14103,20 @@ INT_PTR SecureDesktopDialogBoxParam(
 					// dialog box was indeed displayed in Secure Desktop
 					retValue = param.retValue;
 					bSuccess = TRUE;
-				}
-			}
 
-			if (param.hDesk)
-			{	
-				while (!SwitchDesktop (hOriginalDesk))
+					// switch back to the original desktop
+					while (!SwitchDesktop (hOriginalDesk))
+					{
+						Sleep (SECUREDESKTOP_MONOTIR_PERIOD);
+					}
+
+					SetThreadDesktop (hOriginalDesk);
+				}
+
+				if (param.hDesk)
 				{
-					Sleep (SECUREDESKTOP_MONOTIR_PERIOD);
+					CloseDesktop (param.hDesk);
 				}
-
-				SetThreadDesktop (hOriginalDesk);
-
-				CloseDesktop (param.hDesk);
 			}
 
 			// get the new list of ctfmon.exe processes in order to find the ID of the

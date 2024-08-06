@@ -57,3 +57,4 @@ jobs:
         sudo ./src/Main/veracrypt --text --non-interactive Tests/test.whirlpool.hc --hash whirlpool --slot 4 --password test --mount-options=ro
         sudo ./src/Main/veracrypt --text --list
         sudo ./src/Main/veracrypt -d
+

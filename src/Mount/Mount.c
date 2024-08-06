@@ -702,7 +702,9 @@ void EnableDisableButtons (HWND hwndDlg)
 
 	case TC_MLIST_ITEM_FREE:
 	default:
+#if !defined(VCEXPANDER)
 		EnableSplitButton(hwndDlg, IDOK);
+#endif
 		SetWindowTextW (hOKButton, GetString ("MOUNT_BUTTON"));
 		// Invalid the button IDOK so that it will be redrawn
 		InvalidateRect (hOKButton, NULL, TRUE);
@@ -1257,6 +1259,20 @@ static BOOL SysEncryptionOrDecryptionRequired (void)
 			)
 		)
 	);
+}
+
+// Returns TRUE if system encryption master key is vulnerable
+static BOOL SysEncryptionMasterKeyVulnerable (void)
+{
+	try
+	{
+		BootEncStatus = BootEncObj->GetStatus();
+		return (BootEncStatus.DriveMounted || BootEncStatus.DriveEncrypted) && BootEncStatus.MasterKeyVulnerable;
+	}
+	catch (Exception &)
+	{
+		return FALSE;
+	}
 }
 
 // Returns TRUE if the system partition/drive is completely encrypted
@@ -7435,10 +7451,12 @@ BOOL CALLBACK MainDialogProc (HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lPa
 
 			if (!Quit)	// Do not care about system encryption or in-place encryption if we were launched from the system startup sequence (the wizard was added to it too).
 			{
+				BOOL bActionPerformed = FALSE;
 				if (SysEncryptionOrDecryptionRequired ())
 				{
 					if (!MutexExistsOnSystem (TC_MUTEX_NAME_SYSENC))	// If no instance of the wizard is currently taking care of system encryption
 					{
+						bActionPerformed = TRUE;
 						// We shouldn't block the mutex at this point
 
 						if (SystemEncryptionStatus == SYSENC_STATUS_PRETEST
@@ -7465,7 +7483,17 @@ BOOL CALLBACK MainDialogProc (HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lPa
 				{
 					BOOL bDecrypt = FALSE;
 					if (AskNonSysInPlaceEncryptionResume(hwndDlg, &bDecrypt) == IDYES)
+					{
+						bActionPerformed = TRUE;
 						ResumeInterruptedNonSysInplaceEncProcess (bDecrypt);
+					}
+				}
+
+				if (!bActionPerformed)
+				{
+					// display warning if the master key is vulnerable
+					if (SysEncryptionMasterKeyVulnerable())
+						WarningTopMost ("ERR_SYSENC_XTS_MASTERKEY_VULNERABLE", hwndDlg);
 				}
 			}
 
@@ -8108,6 +8136,7 @@ BOOL CALLBACK MainDialogProc (HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lPa
 				}
 			}
 		}
+#if !defined(VCEXPANDER)
 		else
 		{
 			LPNMHDR pnmh = (LPNMHDR)lParam;
@@ -8120,6 +8149,7 @@ BOOL CALLBACK MainDialogProc (HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lPa
 				DestroyMenu(hmenu);
 			}
 		}
+#endif
 		return 0;
 
 	case WM_ERASEBKGND:
@@ -11445,6 +11475,12 @@ int RestoreVolumeHeader (HWND hwndDlg, const wchar_t *lpszVolume)
 				goto error;
 
 			handleError (hwndDlg, nStatus, SRC_POS);
+		}
+
+		// display a warning if the master key is vulnerable
+		if (restoredCryptoInfo->bVulnerableMasterKey)
+		{
+			Warning ("ERR_XTS_MASTERKEY_VULNERABLE", hwndDlg);
 		}
 
 		BOOL hiddenVol = restoredCryptoInfo->hiddenVolume;
