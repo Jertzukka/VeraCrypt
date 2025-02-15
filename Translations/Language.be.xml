@@ -15,11 +15,11 @@
     <entry lang="be" key="IDC_OPEN_CONTAINING_FOLDER">Па заканчэнню адкрыць тэчку ўсталёўкі</entry>
     <entry lang="be" key="IDC_PROG_GROUP">Дадаць VeraCrypt у меню 'Пуск'</entry>
     <entry lang="be" key="IDC_SYSTEM_RESTORE">Стварыць пункт аднаўлення сістэмы</entry>
-    <entry lang="be" key="IDC_UNINSTALL">Выдаліць</entry>
+    <entry lang="be" key="IDC_UNINSTALL">Выдаліць<</entry>
     <entry lang="be" key="IDC_WIZARD_MODE_EXTRACT_ONLY">Выняць</entry>
     <entry lang="be" key="IDC_WIZARD_MODE_INSTALL">Усталяваць</entry>
     <entry lang="be" key="IDD_INSTL_DLG">Майстар усталёўкі VeraCrypt</entry>
-    <entry lang="be" key="IDD_UNINSTALL">Выдаленне VeraCrypt</entry>
+    <entry lang="be" key="UNINSTALL">Выдаленне VeraCrypt</entry>
     <entry lang="be" key="IDHELP">Даведка</entry>
     <entry lang="be" key="IDT_EXTRACT_DESTINATION">Абярыце або ўвядзіце месца прызначэння для вынятых файлаў:</entry>
     <entry lang="be" key="IDT_INSTALL_DESTINATION">Абярыце або ўвядзіце месца на дыску, дзе Вы жадаеце ўсталяваць праграмныя файлы VeraCrypt. Калі азначанай тэчкі не існуе, яна будзе створана аўтаматычна.</entry>
