@@ -37,10 +37,10 @@ namespace VeraCrypt
 	}
 
 	// Find executable in system paths
-	std::string Process::FindSystemBinary(const char* name, std::string& errorMsg) {
-		if (!name) {
+	std::string Process::FindSystemBinary(const char* name, std::string* errorMsg) {
+		if (!name && errorMsg != nullptr) {
 			errno = EINVAL; // Invalid argument
-			errorMsg = "Invalid input: name or paths is NULL";
+			*errorMsg = "Invalid input: name or paths is NULL";
 			return "";
 		}
 
@@ -70,9 +70,31 @@ namespace VeraCrypt
 			return currentPath;
 		}
 
-		// Prepare error message
+		if (errorMsg != nullptr) {
+			// Prepare error message
+			errno = ENOENT; // No such file or directory
+			*errorMsg = std::string(name) + " not found in system directories";
+		}
+		return "";
+	}
+
+	// Wrapper for FindSystemBinary to look for multiple binaries, where the first one found is returned
+	std::string Process::FindSystemBinaries(const std::vector<const char*>& names, std::string* errorMsg) {
+		std::string namesList;
+		for (const auto& name : names) {
+			if (namesList.empty()) {
+				namesList = name;
+			} else {
+				namesList += ", ";
+				namesList += name;
+			}
+
+			std::string foundPath = FindSystemBinary(name, nullptr);
+			if (!foundPath.empty()) return foundPath;
+		}
+
 		errno = ENOENT; // No such file or directory
-		errorMsg = std::string(name) + " not found in system directories";
+		*errorMsg = std::string(namesList) + " not found in system directories";
 		return "";
 	}
 
@@ -87,7 +109,7 @@ namespace VeraCrypt
 		if (!execFunctor && (processNameArg[0] != '/'))
 		{
 			std::string errorMsg;
-			processName = FindSystemBinary(processNameArg.c_str(), errorMsg);
+			processName = FindSystemBinary(processNameArg.c_str(), &errorMsg);
 			if (processName.empty())
 				throw SystemException(SRC_POS, errorMsg);
 		}

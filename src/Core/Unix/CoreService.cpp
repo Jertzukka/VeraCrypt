@@ -309,12 +309,15 @@ namespace VeraCrypt
 					// We are redirecting stderr to stdout and discarding both to avoid any output.
 					// This approach also works on newer macOS versions (12.0 and later).
 					std::string errorMsg;
-
-					string sudoAbsolutePath = Process::FindSystemBinary("sudo", errorMsg);
+#if defined(TC_LINUX) || defined (TC_FREEBSD)
+					string sudoAbsolutePath = Process::FindSystemBinaries({"sudo", "sudo-rs"}, &errorMsg);
+#else
+					string sudoAbsolutePath = Process::FindSystemBinary("sudo", &errorMsg);
+#endif
 					if (sudoAbsolutePath.empty())
 						throw SystemException(SRC_POS, errorMsg);
 
-					string trueAbsolutePath = Process::FindSystemBinary("true", errorMsg);
+					string trueAbsolutePath = Process::FindSystemBinary("true", &errorMsg);
 					if (trueAbsolutePath.empty())
 						throw SystemException(SRC_POS, errorMsg);
 
@@ -417,15 +420,19 @@ namespace VeraCrypt
 				{
 					// Throw exception if sudo is not found in secure locations
 					std::string errorMsg;
-					string sudoPath = Process::FindSystemBinary("sudo", errorMsg);
+#if defined(TC_LINUX) || defined (TC_FREEBSD)
+					string sudoPath = Process::FindSystemBinaries({"sudo", "sudo-rs"}, &errorMsg);
+#else
+					string sudoPath = Process::FindSystemBinary("sudo", &errorMsg);
+#endif
 					if (sudoPath.empty())
 						throw SystemException(SRC_POS, errorMsg);
 
 					string appPath = request.ApplicationExecutablePath;
-					// if appPath is empty or not absolute, use FindSystemBinary to get the full path of veracrpyt executable
+					// if appPath is empty or not absolute, use FindSystemBinary to get the full path of veracrypt executable
 					if (appPath.empty() || appPath[0] != '/')
 					{
-						appPath = Process::FindSystemBinary("veracrypt", errorMsg);
+						appPath = Process::FindSystemBinary("veracrypt", &errorMsg);
 						if (appPath.empty())
 							throw SystemException(SRC_POS, errorMsg);
 					}

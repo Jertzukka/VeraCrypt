@@ -84,7 +84,7 @@ namespace VeraCrypt
 
 		// Find system fsck first
 		std::string errorMsg;
-		std::string fsckPath = Process::FindSystemBinary("fsck", errorMsg);
+		std::string fsckPath = Process::FindSystemBinary("fsck", &errorMsg);
 		if (fsckPath.empty()) {
 			throw SystemException(SRC_POS, errorMsg);
 		}
@@ -104,13 +104,13 @@ namespace VeraCrypt
 		// Try each terminal
 		for (const TerminalInfo* term = TERMINALS; term->name != NULL; ++term) {
 			errno = 0;
-			std::string termPath = Process::FindSystemBinary(term->name, errorMsg);
+			std::string termPath = Process::FindSystemBinary(term->name, &errorMsg);
 			if (termPath.length() > 0) {
 				// check dependencies
 				if (term->dependency_path) {
 					bool depFound = true;
 					for (const char** dep = term->dependency_path; *dep != NULL; ++dep) {
-						string depPath = Process::FindSystemBinary(*dep, errorMsg);
+						string depPath = Process::FindSystemBinary(*dep, &errorMsg);
 						if (depPath.empty()) {
 							depFound = false;
 							break;
